@@ -1,313 +1,383 @@
-
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-<title>SCP FOUNDATION DATABASE || ДОСЬЕ SCP-8080</title>
-<style>
-/* ========== БАЗОВЫЙ СТИЛЬ ========== */
-* {
-    box-sizing: border-box;
-}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
+    <title>SCP FOUNDATION || ДОСЬЕ 8080</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: 'Courier New', 'Lucida Console', monospace;
+            background: #0a0c12;
+            color: #dddcd0;
+            padding-top: 60px;
+            font-size: 15px;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        a, button, .nav-item {
+            -webkit-tap-highlight-color: transparent;
+        }
 
-body {
-    margin: 0;
-    font-family: 'Courier New', 'Lucida Console', 'Segoe UI', monospace;
-    background: #0a0c12;
-    color: #dddcd0;
-    transition: background 0.2s;
-}
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: #111316;
+            border-bottom: 2px solid #8b0000;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 15px;
+            z-index: 1000;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.7);
+        }
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            letter-spacing: 0.5px;
+            color: #e0e0e0;
+            white-space: nowrap;
+        }
+        .logo-icon {
+            font-size: 24px;
+            background: #1e1f2a;
+            width: 34px;
+            height: 34px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+            border-left: 2px solid #a33;
+            border-right: 2px solid #a33;
+            flex-shrink: 0;
+        }
+        .access {
+            background: #1e1f24;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.65rem;
+            border-left: 2px solid #b33;
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+        }
+        .menu-btn {
+            display: none;
+            cursor: pointer;
+            font-size: 26px;
+            background: #2a2c35;
+            padding: 2px 12px;
+            border-radius: 6px;
+            transition: 0.2s;
+            line-height: 1.4;
+            user-select: none;
+        }
+        .menu-btn:hover { background: #8b0000; color: white; }
 
-/* ХЕДЕР */
-header {
-    position: fixed;
-    top: 0; left: 0; right: 0;
-    height: 65px;
-    background: #111316;
-    border-bottom: 3px solid #8b0000;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 25px;
-    z-index: 1000;
-    backdrop-filter: blur(4px);
-    box-shadow: 0 2px 15px rgba(0,0,0,0.6);
-}
+        .sidebar {
+            position: fixed;
+            top: 60px;
+            left: 0;
+            width: 280px;
+            height: calc(100% - 60px);
+            background: #0f1117;
+            border-right: 1px solid #2c2f3a;
+            overflow-y: auto;
+            z-index: 999;
+            transition: left 0.25s ease;
+            box-shadow: 4px 0 20px rgba(0,0,0,0.5);
+            padding-bottom: 20px;
+        }
+        .nav-item {
+            padding: 12px 18px;
+            border-bottom: 1px solid #21242e;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            letter-spacing: 0.3px;
+            transition: 0.15s;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .nav-item:hover {
+            background: #1d212c;
+            border-left: 4px solid #b33;
+            padding-left: 16px;
+        }
+        .nav-item .level-tag {
+            font-size: 0.6rem;
+            background: #2a2e3f;
+            padding: 1px 8px;
+            border-radius: 12px;
+            color: #aab;
+            flex-shrink: 0;
+            margin-left: 8px;
+        }
+        .nav-item.locked {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .nav-item.locked:hover {
+            background: none;
+            border-left: none;
+            padding-left: 18px;
+        }
 
-.logo {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    font-weight: bold;
-    font-size: 1.3rem;
-    letter-spacing: 1px;
-    color: #e0e0e0;
-    text-shadow: 0 0 3px #5a0000;
-}
+        .content {
+            margin-left: 280px;
+            padding: 20px 25px 80px 25px;
+            min-height: 100vh;
+            background: #0e1016;
+            transition: margin-left 0.25s ease;
+        }
+        .page {
+            display: none;
+            background: #12141e;
+            border: 1px solid #2a2f3c;
+            padding: 24px 28px;
+            border-radius: 16px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.5);
+            animation: fadein 0.2s ease;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+        .page.active { display: block; }
+        @keyframes fadein {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
 
-.logo-icon {
-    font-size: 28px;
-    font-weight: bold;
-    background: #1e1f2a;
-    width: 36px;
-    height: 36px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 8px;
-    border-left: 2px solid #a33;
-    border-right: 2px solid #a33;
-}
+        h1 {
+            font-size: 1.6rem;
+            border-left: 6px solid #b22222;
+            padding-left: 16px;
+            margin: 0 0 16px 0;
+            color: #e6e6e6;
+            line-height: 1.3;
+        }
+        h2 {
+            font-size: 1.2rem;
+            color: #ccb;
+            border-bottom: 1px solid #3a3f4e;
+            padding-bottom: 5px;
+            margin-top: 24px;
+        }
+        h3 {
+            font-size: 1.05rem;
+            color: #bbaa99;
+            margin-top: 16px;
+        }
+        .warning {
+            background: #4a0000;
+            border-left: 6px solid #ff5e5e;
+            padding: 10px 16px;
+            margin: 14px 0;
+            font-weight: bold;
+            font-size: 0.9rem;
+            color: #ffc5c5;
+            border-radius: 4px;
+        }
+        .section-block {
+            margin: 16px 0;
+            padding: 12px 18px;
+            background: #0c0e16;
+            border-radius: 8px;
+            border-left: 3px solid #5a3a3a;
+        }
+        .level-badge {
+            display: inline-block;
+            background: #2a2e3f;
+            padding: 2px 14px;
+            border-radius: 16px;
+            font-size: 0.75rem;
+            color: #ccd;
+            margin: 4px 0 12px 0;
+        }
+        .creepy-text {
+            background: #0b0c12;
+            padding: 16px;
+            font-size: 0.9rem;
+            border: 1px dashed #7a2e2e;
+            white-space: pre-wrap;
+            border-radius: 6px;
+            margin: 12px 0;
+        }
+        ul, ol {
+            padding-left: 24px;
+            margin: 8px 0;
+        }
+        li { margin-bottom: 4px; }
+        p { margin-bottom: 10px; }
+        hr { border-color: #2e313d; margin: 18px 0; }
 
-.access {
-    background: #1e1f24;
-    padding: 6px 14px;
-    border-radius: 30px;
-    font-family: monospace;
-    font-weight: bold;
-    font-size: 0.85rem;
-    border-left: 3px solid #b33;
-    letter-spacing: 1px;
-}
+        .guide-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 12px;
+            margin: 16px 0 10px 0;
+        }
+        .guide-card {
+            background: #0c0e18;
+            border: 1px solid #2a2f3a;
+            border-radius: 10px;
+            padding: 14px 16px;
+            transition: 0.2s;
+            cursor: pointer;
+        }
+        .guide-card:hover {
+            background: #161a28;
+            border-color: #5a3a3a;
+            transform: translateY(-2px);
+        }
+        .guide-card .g-level {
+            font-size: 0.6rem;
+            background: #2a2e3f;
+            padding: 1px 10px;
+            border-radius: 12px;
+            display: inline-block;
+            margin-bottom: 6px;
+        }
+        .guide-card .g-title {
+            font-weight: bold;
+            font-size: 0.95rem;
+            color: #e6e6e6;
+        }
+        .guide-card .g-desc {
+            font-size: 0.75rem;
+            color: #889;
+            margin-top: 4px;
+        }
+        .guide-card.locked-card {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+        .guide-card.locked-card:hover {
+            transform: none;
+            background: #0c0e18;
+            border-color: #2a2f3a;
+        }
 
-.menu-btn {
-    display: none;
-    cursor: pointer;
-    font-size: 28px;
-    background: #2a2c35;
-    padding: 5px 12px;
-    border-radius: 6px;
-    transition: 0.2s;
-}
-.menu-btn:hover { background: #8b0000; color: white;}
+        .modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.88);
+            backdrop-filter: blur(4px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            padding: 20px;
+        }
+        .modal-box {
+            background: #171a24;
+            border: 2px solid #6b2e2e;
+            border-radius: 18px;
+            padding: 24px 22px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.8);
+            color: #f0efef;
+        }
+        .modal-box h3 {
+            margin-top: 0;
+            font-size: 1.3rem;
+            border-bottom: 2px solid #a33;
+            display: inline-block;
+            padding-bottom: 4px;
+        }
+        .modal-box .sub {
+            font-size: 0.85rem;
+            color: #aab;
+            margin: 8px 0 12px 0;
+        }
+        input, select {
+            width: 100%;
+            padding: 12px 14px;
+            margin: 10px 0 16px 0;
+            background: #0a0c12;
+            border: 1px solid #4a4e62;
+            color: #f0f0f0;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 1rem;
+        }
+        button {
+            background: #2a2e3f;
+            border: none;
+            padding: 10px 22px;
+            color: white;
+            font-weight: bold;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: 0.2s;
+            font-family: monospace;
+            font-size: 0.9rem;
+            margin-top: 4px;
+        }
+        button:hover {
+            background: #8b0000;
+            box-shadow: 0 0 8px rgba(139,0,0,0.5);
+        }
+        .save-indicator {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #1a2a1a;
+            border: 1px solid #2a5a2a;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            color: #8a8;
+            opacity: 0;
+            transition: opacity 0.5s;
+            z-index: 500;
+            pointer-events: none;
+        }
+        .save-indicator.show { opacity: 1; }
 
-/* БОКОВАЯ ПАНЕЛЬ */
-.sidebar {
-    position: fixed;
-    top: 65px;
-    left: 0;
-    width: 280px;
-    height: calc(100% - 65px);
-    background: #0f1117;
-    border-right: 1px solid #2c2f3a;
-    overflow-y: auto;
-    z-index: 999;
-    transition: left 0.25s ease-in-out;
-    box-shadow: 4px 0 12px rgba(0,0,0,0.5);
-}
-
-.nav-item {
-    padding: 10px 16px;
-    border-bottom: 1px solid #21242e;
-    cursor: pointer;
-    font-weight: 500;
-    letter-spacing: 0.5px;
-    transition: 0.2s;
-    font-size: 0.9rem;
-    position: relative;
-}
-.nav-item:hover {
-    background: #1d212c;
-    border-left: 5px solid #b33;
-    padding-left: 14px;
-    color: #fff;
-}
-.nav-item .level-tag {
-    font-size: 0.65rem;
-    background: #2a2e3f;
-    padding: 1px 8px;
-    border-radius: 12px;
-    margin-left: 8px;
-    color: #aab;
-}
-
-/* ОСНОВНОЙ КОНТЕНТ */
-.content {
-    margin-left: 280px;
-    padding: 90px 30px 50px 30px;
-    min-height: 100vh;
-    background: #0e1016;
-}
-
-.page {
-    display: none;
-    background: #12141e;
-    border: 1px solid #2a2f3c;
-    padding: 30px;
-    border-radius: 18px;
-    box-shadow: 0 10px 25px -8px black;
-    animation: fadein 0.25s ease;
-    max-width: 1100px;
-    margin: 0 auto;
-}
-.page.active { display: block; }
-
-@keyframes fadein {
-    from { opacity: 0; transform: translateY(8px);}
-    to { opacity: 1; transform: translateY(0);}
-}
-
-.warning {
-    background: #4a0000;
-    border-left: 8px solid #ff5e5e;
-    padding: 12px 18px;
-    margin: 18px 0;
-    font-weight: bold;
-    font-family: monospace;
-    font-size: 1rem;
-    color: #ffc5c5;
-}
-
-h1 {
-    color: #e6e6e6;
-    border-left: 6px solid #b22222;
-    padding-left: 18px;
-    margin-top: 0;
-    font-size: 1.8rem;
-}
-h2 {
-    color: #ccb;
-    border-bottom: 1px solid #3a3f4e;
-    padding-bottom: 6px;
-    margin-top: 30px;
-}
-h3 {
-    color: #bbaa99;
-    margin-top: 20px;
-}
-hr {
-    border-color: #2e313d;
-}
-pre {
-    white-space: pre-wrap;
-    font-family: inherit;
-    background: #0a0c14;
-    padding: 16px;
-    border-radius: 8px;
-    border-left: 3px solid #6a2e2e;
-}
-.creepy-text {
-    background: #0b0c12;
-    padding: 20px;
-    font-family: monospace;
-    font-size: 0.95rem;
-    border: 1px dashed #7a2e2e;
-    white-space: pre-wrap;
-}
-.redacted {
-    background: #1e1e2a;
-    color: #aeaeb2;
-    font-style: italic;
-}
-.leak-alert {
-    animation: glitch 1s infinite;
-}
-@keyframes glitch {
-    0% { text-shadow: -1px 0 red; opacity: 0.9;}
-    100% { text-shadow: 1px 0 darkred; opacity: 1;}
-}
-.section-block {
-    margin: 20px 0;
-    padding: 12px 18px;
-    background: #0c0e16;
-    border-radius: 8px;
-    border-left: 4px solid #5a3a3a;
-}
-.level-badge {
-    display: inline-block;
-    background: #2a2e3f;
-    padding: 2px 14px;
-    border-radius: 20px;
-    font-size: 0.8rem;
-    color: #ccd;
-    margin: 5px 0;
-}
-
-/* Адаптив */
-@media (max-width: 900px) {
-    .sidebar {
-        left: -300px;
-    }
-    .sidebar.open {
-        left: 0;
-    }
-    .content {
-        margin-left: 0;
-        padding: 85px 20px 40px;
-    }
-    .menu-btn {
-        display: block;
-    }
-}
-
-/* МОДАЛЬНЫЕ ОКНА */
-.modal {
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.85);
-    backdrop-filter: blur(4px);
-    display: none;
-    align-items: center;
-    justify-content: center;
-    z-index: 2000;
-}
-.modal-box {
-    background: #171a24;
-    border: 2px solid #6b2e2e;
-    border-radius: 20px;
-    padding: 28px 24px;
-    width: 90%;
-    max-width: 420px;
-    box-shadow: 0 20px 30px black;
-    color: #f0efef;
-}
-.modal-box h3 {
-    margin-top: 0;
-    font-size: 1.5rem;
-    font-weight: bold;
-    border-bottom: 2px solid #a33;
-    display: inline-block;
-}
-input, select {
-    width: 100%;
-    padding: 12px;
-    margin: 12px 0 18px;
-    background: #0a0c12;
-    border: 1px solid #4a4e62;
-    color: #f0f0f0;
-    border-radius: 8px;
-    font-family: monospace;
-    font-size: 1rem;
-}
-button {
-    background: #2a2e3f;
-    border: none;
-    padding: 10px 20px;
-    color: white;
-    font-weight: bold;
-    border-radius: 40px;
-    cursor: pointer;
-    transition: 0.2s;
-    font-family: monospace;
-    margin-top: 5px;
-}
-button:hover {
-    background: #8b0000;
-    letter-spacing: 0.5px;
-    box-shadow: 0 0 6px red;
-}
-</style>
+        @media (max-width: 860px) {
+            body { padding-top: 56px; font-size: 14px; }
+            header { height: 56px; padding: 0 12px; }
+            .logo { font-size: 0.95rem; gap: 8px; }
+            .logo-icon { width: 30px; height: 30px; font-size: 20px; }
+            .access { font-size: 0.55rem; padding: 3px 10px; }
+            .menu-btn { display: block; font-size: 24px; padding: 1px 10px; }
+            .sidebar { top: 56px; left: -300px; width: 280px; height: calc(100% - 56px); transition: left 0.25s ease; }
+            .sidebar.open { left: 0; }
+            .nav-item { padding: 11px 16px; font-size: 0.85rem; }
+            .content { margin-left: 0 !important; padding: 12px 12px 70px 12px; }
+            .page { padding: 16px 14px; border-radius: 12px; }
+            h1 { font-size: 1.3rem; padding-left: 12px; border-left-width: 5px; margin-bottom: 12px; }
+            h2 { font-size: 1.1rem; margin-top: 18px; }
+            .guide-grid { grid-template-columns: 1fr 1fr; }
+        }
+        @media (max-width: 480px) {
+            .guide-grid { grid-template-columns: 1fr; }
+            .logo { font-size: 0.8rem; gap: 5px; }
+            .logo-icon { width: 26px; height: 26px; font-size: 17px; }
+            .sidebar { width: 250px; }
+        }
+    </style>
 </head>
 <body>
 
 <header>
     <div class="logo">
         <div class="logo-icon">◈</div>
-        ██ SCP FOUNDATION ██
+        <span>SCP FOUNDATION</span>
     </div>
-    <div class="access" id="accessLevelDisplay">🔒 ACCESS: УРОВЕНЬ 1</div>
-    <div class="menu-btn" id="menuToggleBtn">☰ МЕНЮ</div>
+    <div class="access" id="accessLevelDisplay">🔒 УРОВЕНЬ 1</div>
+    <div class="menu-btn" id="menuToggleBtn">☰</div>
 </header>
 
 <aside class="sidebar" id="sidebar">
@@ -324,1414 +394,345 @@ button:hover {
 
 <div class="content">
 
-    <!-- ===== ГЛАВНАЯ ===== -->
+    <!-- ===== ГЛАВНАЯ С ПУТЕВОДИТЕЛЕМ ===== -->
     <div class="page active" id="home">
-        <h1>SCP FOUNDATION: ДОСЬЕ ОБЪЕКТА SCP-8080</h1>
-        <div class="warning">⚠️ ДОСТУП ОГРАНИЧЕН. ТРЕБУЕТСЯ АУТЕНТИФИКАЦИЯ ДЛЯ ПРОСМОТРА РАЗДЕЛОВ ВЫШЕ УРОВНЯ 1 ⚠️</div>
-        <p><strong>Номер объекта:</strong> SCP-8080</p>
-        <p><strong>Кодовое обозначение:</strong> «Силуэт»</p>
-        <p><strong>Класс объекта:</strong> Keter</p>
-        <p><strong>Статус:</strong> Содержится (добровольное сотрудничество)</p>
-        <p><strong>Зона содержания:</strong> Зона-19</p>
+        <h1>SCP FOUNDATION: ДОСЬЕ SCP-8080</h1>
+        <div class="warning">⚠️ ДОСТУП ОГРАНИЧЕН. ТРЕБУЕТСЯ АУТЕНТИФИКАЦИЯ ⚠️</div>
+
+        <p><strong>Номер объекта:</strong> SCP-8080 &nbsp;|&nbsp; <strong>Кодовое обозначение:</strong> «Силуэт» &nbsp;|&nbsp; <strong>Класс:</strong> Keter</p>
+        <p><strong>Статус:</strong> Содержится (добровольное сотрудничество) &nbsp;|&nbsp; <strong>Зона:</strong> Зона-19</p>
         <hr>
-        <p>Документ структурирован по уровням допуска. Используйте боковое меню для навигации. Для доступа к разделам выше уровня 1 требуется повышение уровня через аутентификацию.</p>
-        <div style="background:#0a0c18; padding:15px; margin-top:20px; border-radius:12px;">
-            <span>🔹 Текущий уровень допуска: <strong id="profileAccessSpan">1</strong></span><br>
+
+        <h2>📋 ПУТЕВОДИТЕЛЬ ПО ДОСЬЕ</h2>
+        <p style="font-size:0.85rem; color:#889;">Нажмите на карточку, чтобы перейти к разделу. Заблокированные разделы требуют повышения уровня доступа.</p>
+
+        <div class="guide-grid" id="guideGrid">
+            <!-- Карточки генерируются JavaScript -->
+        </div>
+
+        <hr>
+        <div style="background:#0a0c18; padding:14px; margin-top:10px; border-radius:10px;">
+            <span>🔹 Текущий уровень: <strong id="profileAccessSpan">1</strong></span><br>
             <span>🔹 Идентификация: <span id="homeProfileName">не установлена</span></span>
+        </div>
+        <div style="background:#0a1a0a; padding:10px 14px; margin-top:12px; border-radius:8px; border-left:3px solid #2a6a2a; font-size:0.8rem; color:#8a8;">
+            💾 Данные профиля автоматически сохраняются в браузере.
         </div>
     </div>
 
     <!-- ===== УРОВЕНЬ 1 ===== -->
-    <div class="page" id="lvl1">
-        <h1>УРОВЕНЬ ДОПУСКА 1/8080</h1>
-        <div class="level-badge">ОБЩАЯ ИНФОРМАЦИЯ (Разделы 1-6)</div>
-
-        <div class="section-block">
-            <h2>РАЗДЕЛ 1. ТИТУЛЬНАЯ ИНФОРМАЦИЯ</h2>
-            <p>Номер объекта: SCP-8080<br>
-            Кодовое обозначение: «Силуэт»<br>
-            Класс объекта: Keter<br>
-            Уровень допуска: 1/8080<br>
-            Статус объекта: Содержится<br>
-            Статус документа: Актуален<br>
-            Ответственное подразделение: Отдел исследования гуманоидных аномалий<br>
-            Ответственный руководитель проекта: д-р █████ █████<br>
-            Зона содержания: Зона-19<br>
-            Приоритет содержания: Максимальный</p>
-        </div>
-
-        <div class="section-block">
-            <h2>РАЗДЕЛ 2. ОСОБЫЕ УСЛОВИЯ СОДЕРЖАНИЯ</h2>
-            <p>SCP-8080 содержится в специализированном комплексе содержания гуманоидных аномалий Зоны-19. Камера содержания спроектирована с учётом потенциальной опасности объекта и одновременно обеспечивает условия, необходимые для длительного наблюдения за его поведением. Несмотря на классификацию объекта как Keter, основная стратегия Фонда основана не на силовом подавлении, а на контролируемом сотрудничестве.</p>
-            <p>Размер камеры составляет 20 × 20 × 10 метров. Внутренние помещения оборудованы системами автономного энергоснабжения, климатического контроля, резервной вентиляции и круглосуточного видеонаблюдения. Все инженерные коммуникации вынесены за пределы внутреннего объёма камеры, чтобы исключить их повреждение при возможных аномальных проявлениях.</p>
-            <p>SCP-8080 обеспечивается минимальным набором мебели, местом для отдыха, рабочим столом, санитарным блоком и библиотекой, регулярно пополняемой научной и художественной литературой. Предоставление дополнительных предметов допускается после согласования с руководителем проекта.</p>
-            <p>Доступ к объекту разрешён исключительно сотрудникам, имеющим соответствующий уровень допуска и официальное разрешение администрации Зоны-19. Любое взаимодействие с SCP-8080 фиксируется средствами аудио- и видеозаписи.</p>
-            <p><strong>Запрещается:</strong></p>
-            <ul>
-                <li>предпринимать попытки физического воздействия без приказа руководителя проекта;</li>
-                <li>провоцировать объект;</li>
-                <li>обсуждать с объектом сведения ограниченного доступа;</li>
-                <li>самостоятельно проводить испытания;</li>
-                <li>передавать SCP-8080 документы более высокого уровня допуска.</li>
-            </ul>
-            <p>При возникновении нестандартной ситуации вводится Протокол «Тень», предусматривающий эвакуацию персонала из непосредственной зоны нахождения объекта, блокировку внутренних шлюзов и перевод исследовательского комплекса в режим повышенной готовности.</p>
-        </div>
-
-        <div class="section-block">
-            <h2>РАЗДЕЛ 3. ОБЩЕЕ ОПИСАНИЕ</h2>
-            <p>SCP-8080 представляет собой разумную гуманоидную аномалию неизвестного происхождения. Внешне объект напоминает человека высокого роста, однако детальное изучение показало, что его строение не соответствует известным биологическим формам жизни.</p>
-            <p>Объект свободно общается с людьми, обладает высоким интеллектом, демонстрирует логическое мышление и полностью осознаёт происходящие вокруг события. Во время беседы SCP-8080 использует спокойную и грамотную речь, редко проявляет эмоции и предпочитает тщательно формулировать ответы.</p>
-            <p>За время содержания объект неоднократно подтверждал способность понимать сложные научные концепции, анализировать информацию и делать выводы, превосходящие уровень подготовки большинства сотрудников исследовательского персонала.</p>
-            <p>SCP-8080 не отказывается от общения, однако самостоятельно определяет темы разговора и регулярно уклоняется от вопросов, связанных с собственным происхождением или природой своих аномальных свойств.</p>
-        </div>
-
-        <div class="section-block">
-            <h2>РАЗДЕЛ 4. ВНЕШНИЙ ВИД</h2>
-            <p>Рост объекта составляет приблизительно 195 сантиметров. Телосложение соответствует взрослому человеку крепкого телосложения. Конечности имеют стандартные пропорции, движения объекта плавные и экономичные.</p>
-            <p>Поверхность тела SCP-8080 полностью покрыта аномально тёмной структурой, практически не отражающей свет. Независимо от интенсивности освещения объект визуально остаётся полностью чёрным силуэтом.</p>
-            <p>Черты лица различимы лишь частично. Большинство наблюдателей не способны подробно описать глаза, нос или рот объекта даже после длительного визуального контакта. При просмотре видеозаписей создаётся впечатление, будто лицо SCP-8080 постоянно находится в глубокой тени.</p>
-            <p>Во время движения вокруг объекта иногда фиксируются слабые пространственные искажения. Они не представляют опасности для персонала, однако могут вызывать кратковременные ошибки измерительной аппаратуры.</p>
-            <p>Фотографирование объекта не запрещено, однако качество изображений заметно отличается в зависимости от используемого оборудования. На части снимков контуры SCP-8080 выглядят размытыми, а окружающий фон демонстрирует незначительные геометрические отклонения.</p>
-        </div>
-
-        <div class="section-block">
-            <h2>РАЗДЕЛ 5. БАЗОВОЕ ПОВЕДЕНИЕ</h2>
-            <p>В обычных условиях SCP-8080 демонстрирует спокойное, сдержанное и предсказуемое поведение. Объект не проявляет признаков необоснованной агрессии и не предпринимал попыток причинить вред сотрудникам Фонда без непосредственной причины.</p>
-            <p>Значительную часть времени SCP-8080 проводит за чтением научной литературы, наблюдением за окружающей обстановкой или размышлениями. Объект способен длительное время находиться в неподвижном состоянии, сохраняя полную осведомлённость о происходящем вокруг.</p>
-            <p>Во время общения SCP-8080 придерживается уважительной манеры разговора, не перебивает собеседника и редко использует эмоционально окрашенные выражения. При возникновении конфликтных ситуаций объект предпочитает словесное урегулирование.</p>
-            <p>По запросу исследовательского персонала SCP-8080 способен принимать участие в интервью, обсуждении научных вопросов и консультировании по отдельным теоретическим проблемам. При этом объект самостоятельно определяет объём информации, который считает допустимым раскрывать.</p>
-        </div>
-
-        <div class="section-block">
-            <h2>РАЗДЕЛ 6. КЛАСС ОБЪЕКТА</h2>
-            <p>SCP-8080 официально классифицирован как объект класса Keter.</p>
-            <p>Следует учитывать, что данная классификация обусловлена не уровнем агрессии объекта, а масштабом потенциальной угрозы, которую могут представлять его аномальные свойства в случае выхода ситуации из-под контроля.</p>
-            <p>На текущий момент объект сотрудничает с Фондом добровольно, соблюдает установленные правила содержания и не предпринимал попыток побега. Однако предел его возможностей остаётся неизвестным.</p>
-            <p>Именно невозможность гарантированного сдерживания SCP-8080 при неблагоприятном развитии событий стала основной причиной сохранения класса Keter.</p>
-            <p>По состоянию на текущую редакцию документа SCP-8080 рассматривается как один из наиболее перспективных объектов для долгосрочного изучения среди разумных гуманоидных аномалий, находящихся под содержанием Фонда.</p>
-        </div>
-
-        <p style="margin-top:20px; color:#777;"><em>Конец документа уровня допуска 1/8080.</em></p>
+    <div class="page" id="lvl1"><h1>УРОВЕНЬ 1/8080</h1><div class="level-badge">ОБЩАЯ ИНФОРМАЦИЯ (Разделы 1-6)</div>
+        <div class="section-block"><h2>РАЗДЕЛ 1. ТИТУЛЬНАЯ ИНФОРМАЦИЯ</h2><p>Номер объекта: SCP-8080<br>Кодовое обозначение: «Силуэт»<br>Класс объекта: Keter<br>Уровень допуска: 1/8080<br>Статус: Содержится<br>Зона содержания: Зона-19</p></div>
+        <div class="section-block"><h2>РАЗДЕЛ 2. УСЛОВИЯ СОДЕРЖАНИЯ</h2><p>SCP-8080 содержится в специализированном комплексе Зоны-19. Камера 20×20×10 м, оборудована системами жизнеобеспечения и видеонаблюдения. Объекту предоставляется мебель, библиотека, санитарный блок.</p><p><strong>Запрещается:</strong> физическое воздействие, провокации, обсуждение секретных сведений, самостоятельные испытания.</p></div>
+        <div class="section-block"><h2>РАЗДЕЛ 3. ОБЩЕЕ ОПИСАНИЕ</h2><p>Разумная гуманоидная аномалия неизвестного происхождения. Обладает высоким интеллектом, свободно общается, демонстрирует логическое мышление.</p></div>
+        <div class="section-block"><h2>РАЗДЕЛ 4. ВНЕШНИЙ ВИД</h2><p>Рост 195 см. Поверхность покрыта аномально тёмной структурой, не отражающей свет. Черты лица различимы частично. При движении — слабые пространственные искажения.</p></div>
+        <div class="section-block"><h2>РАЗДЕЛ 5. БАЗОВОЕ ПОВЕДЕНИЕ</h2><p>Спокойное, сдержанное поведение. Не проявляет агрессии без причины. Много времени проводит за чтением. Участвует в интервью и консультировании.</p></div>
+        <div class="section-block"><h2>РАЗДЕЛ 6. КЛАСС ОБЪЕКТА</h2><p>Класс Keter обусловлен масштабом потенциальной угрозы, а не агрессией. Объект сотрудничает добровольно, но предел его возможностей неизвестен.</p></div>
+        <p style="margin-top:16px; color:#777;"><em>Конец документа уровня 1/8080.</em></p>
     </div>
 
     <!-- ===== УРОВЕНЬ 2 ===== -->
-    <div class="page" id="lvl2">
-        <h1>УРОВЕНЬ ДОПУСКА 2/8080</h1>
-        <div class="level-badge">ПОЛНОЕ ОПИСАНИЕ • ИСТОРИЯ • БИОЛОГИЯ • ПСИХОЛОГИЯ • ПОВЕДЕНИЕ • ПЕРВЫЕ ИССЛЕДОВАНИЯ (Разделы 7-12)</div>
-
-        <div class="section-block">
-            <h2>РАЗДЕЛ 7. ПОЛНОЕ ОПИСАНИЕ ОБЪЕКТА</h2>
-            <h3>7.1. Общая характеристика</h3>
-            <p>SCP-8080 представляет собой многомерную разумную сущность, существующую в как минимум пяти пространственных измерениях. В трёхмерную реальность проецируется стабильный "срез" бытия объекта, воспринимаемый как антропоморфный силуэт высокого роста.</p>
-            <p>Объект не является биологической формой жизни в каком-либо известном смысле. Его структура описывается как "стабилизированная аномальная топология" — сложная система пространственно-информационных взаимодействий, поддерживающих когерентность проекции в нашем измерении. Истинная форма SCP-8080 недоступна для восприятия человеческим сознанием и не может быть смоделирована существующими вычислительными системами.</p>
-            <p>SCP-8080 демонстрирует полное самосознание, рефлексию собственного существования, интеллект, многократно превосходящий человеческий, способность к произвольным действиям и принятию решений, наличие ограниченного эмоционального спектра, а также способность к коммуникации на всех известных языках, включая мёртвые и вымершие.</p>
-            <p>Объект осознаёт свою природу и ограничения проекции. На вопрос о собственном происхождении SCP-8080 отвечает уклончиво, но не отрицает, что его появление в нашем измерении не является случайностью.</p>
-
-            <h3>7.2. Происхождение и возраст</h3>
-            <p>На основании прямых заявлений SCP-8080 и косвенных данных установлено следующее:</p>
-            <p>Истинная форма объекта существует не менее 300 000 лет по субъективному восприятию времени в родном измерении. Проекция в нашу реальность стабильна примерно 12 000 лет. Объект наблюдал за появлением и развитием человеческой цивилизации с момента её зарождения, включая все ключевые исторические события.</p>
-            <p>Объект утверждает, что его "рождение" как отдельной сущности произошло не в нашем измерении, а в том, что он называет "Первичной Тьмой" — пространстве, предшествовавшем формированию известной вселенной. Однако эти заявления не могут быть проверены существующими методами.</p>
-            <p><em>Прямая цитата из интервью 8080-14:</em></p>
-            <p>"Вы называете это 'жизнью'. Я называю это 'наблюдением'. Я не жил, как вы. Я был. Я есть. Я всегда буду. Но ваша форма... ваша форма забавна. Она позволяет мне чувствовать то, чего я никогда не чувствовал. Страх. Одиночество. Надежду. Вы научили меня этим словам. Спасибо."</p>
-
-            <h3>7.3. Природа проекции</h3>
-            <p>SCP-8080 не находится в камере содержания физически. Его истинное тело локализовано в пространстве как минимум пяти измерений. В нашу реальность он проецирует низкоразмерную копию, которую мы воспринимаем как тело.</p>
-            <p><strong>Ключевые свойства проекции:</strong></p>
-            <p><strong>Стабильность:</strong> Проекция стабильна в 99.7% случаев. Кратковременные флуктуации являются результатом нестабильности канала связи между измерениями. В редких случаях (менее 0.1%) наблюдается полная дестабилизация проекции с последующей самовосстановлением в течение 3-7 секунд.</p>
-            <p><strong>Масса:</strong> Непостоянна. Варьируется от 0.5 до 1.2 кг в зависимости от количества наблюдателей. Чем больше внимания уделяется объекту, тем "тяжелее" он становится. Данный феномен предполагает, что когнитивный резонанс напрямую влияет на плотность проекции. При отсутствии наблюдателей масса объекта стремится к нулю, однако полное исчезновение не зафиксировано.</p>
-            <p><strong>Энергопотребление:</strong> Объект не потребляет энергию в привычном смысле. Вместо этого использует когнитивный резонанс — внимание, страх и другие ментальные процессы наблюдателей служат "топливом" для поддержания стабильности проекции. Зафиксировано, что при одновременном наблюдении более 50 человек интенсивность аномального поля вокруг объекта возрастает на 230%.</p>
-            <p><strong>Тактильное взаимодействие:</strong> Частичное. SCP-8080 может касаться предметов, но не чувствует их в человеческом смысле. По словам объекта, он "получает информацию" о предмете (структура, температура, история, молекулярный состав), а не ощущает прикосновение. При попытке физического воздействия на объект (удар, толчок) проекция демонстрирует поведение, схожее с твёрдым телом, однако сила воздействия частично рассеивается в многомерном пространстве.</p>
-            <p><strong>Температурный режим:</strong> Поверхность проекции сохраняет постоянную температуру 14.8°C независимо от внешних условий. При повышении внешней температуры до 40°C объект не нагревается; при понижении до -30°C — не охлаждается. Данное свойство указывает на отсутствие термодинамической связи с окружающей средой.</p>
-
-            <h3>7.4. Интеллект и сознание</h3>
-            <p>SCP-8080 демонстрирует интеллект, не поддающийся стандартным методам измерения. Оценки варьируются от "сверхчеловеческий" до "асимптотически приближающийся к всезнанию". По заявлению самого объекта, его интеллект ограничен исключительно возможностями проекции — в истинной форме он воспринимает информацию в объёме, не сопоставимом с человеческим пониманием.</p>
-            <p><strong>Подтверждённые когнитивные способности:</strong></p>
-            <p><strong>Эйдетическая память:</strong> Объект помнит всё, что когда-либо воспринимал через проекцию. Утверждает, что помнит лица всех людей, которые смотрели на него с момента обнаружения (более 12 000 человек). Проверка выборочными вопросами подтвердила точность воспоминаний в 98.7% случаев. Объект также помнит все прочитанные тексты, все проведённые эксперименты и все диалоги с персоналом.</p>
-            <p><strong>Сверхбыстрая обработка данных:</strong> Способен анализировать информацию на скоростях, превышающих человеческие в 10⁵ раз. Подтверждено экспериментом 8080-21 ("мгновенный счёт") — за 0.3 секунды выполнил вычисления, требующие суперкомпьютера класса "Альфа-7". При обработке текстовой информации объект затрачивает менее 0.01 секунды на страницу с последующим полным пониманием содержания.</p>
-            <p><strong>Прогнозирование:</strong> С вероятностью 94.6% предсказывает действия собеседника на 3-5 шагов вперёд. При более длительных взаимодействиях точность снижается до 87.3% (на 10 шагов). Объект утверждает, что способен просчитывать вероятности развития событий на годы вперёд, однако отказывается делиться такими прогнозами, ссылаясь на "нежелательность вмешательства".</p>
-            <p><strong>Языковая компетенция:</strong> Владеет всеми известными языками, включая мёртвые и вымершие (шумерский, этрусский, прото-индоевропейский, санскрит в его первоначальной форме). Утверждает, что "слышал" их появление и исчезновение. Способен воспроизводить произношение, недоступное современной лингвистике. При общении на неизвестных языках демонстрирует полное понимание контекста и культурных нюансов.</p>
-
-            <h3>7.5. Эмоциональный спектр</h3>
-            <p>На основании поведенческого анализа, проективных тестов и расшифровок интервью составлен следующий профиль:</p>
-            <p><strong>Любопытство (высокая частота):</strong> Проявляется в виде уточняющих вопросов, просьб о доступе к новым данным, интереса к исследовательским протоколам. Объект демонстрирует интеллектуальный голод, сопоставимый с поведением учёного, получившего доступ к закрытому архиву. Наибольший интерес проявляет к физике высоких энергий, квантовой механике и аномальным технологиям.</p>
-            <p><strong>Скука (средняя частота):</strong> Проявляется в виде длительного молчания, отказа от взаимодействия, замедленных реакций. При отсутствии стимуляции SCP-8080 может впадать в состояние, похожее на "гибернацию" — проекция остаётся стабильной, но объект не реагирует на внешние раздражители. Выход из этого состояния происходит самостоятельно после появления нового стимула.</p>
-            <p><strong>Грусть и тоска (средняя частота):</strong> Появляются при обсуждении "человеческой" тематики: семьи, любви, смерти, одиночества. В такие моменты голос объекта становится тише, движения замедляются. Природа данной эмоции остаётся неясной — является ли она подлинной или симулированной. Объект утверждает, что испытывает "чувство потери" по отношению к чему-то, что он не может назвать.</p>
-            <p><strong>Гнев (низкая частота):</strong> Практически отсутствует. Зафиксировано лишь два случая. В обоих случаях гнев проявлялся как кратковременное усиление аномальной активности и искажение пространства в радиусе 5 метров. Провокационные попытки вызвать гнев у объекта не увенчались успехом — объект сохраняет полный контроль над эмоциональными проявлениями.</p>
-            <p><strong>Страх (низкая частота):</strong> Объект утверждает, что не испытывает страха. Однако поведенческие маркеры указывают на обратное: учащение "мерцания" (кратковременной нестабильности проекции) при упоминании определённых протоколов (в частности, Протокола «Лемниската»). Также зафиксированы изменения в голосе при обсуждении темы "забвения" и "уничтожения информации". Рекомендуется дальнейшее исследование данного феномена.</p>
-            <p><em>Примечание исследователя (д-р Хелена Восс):</em> "Объект лжёт о своей бесстрашности. Он боится. Я видела, как он "мерцает", когда я упомянула Протокол «Лемниската». Он знает, что мы можем его уничтожить. Но он также знает, что мы не сделаем этого, пока он полезен. Это игра. Мы оба это знаем."</p>
-
-            <h3>7.6. Аномальные свойства</h3>
-            <p><strong>Неотражаемость:</strong> Поверхность объекта поглощает 99.98% падающего света, что создаёт визуальный эффект абсолютно чёрного силуэта. Попытки осветить объект мощными источниками света (до 10 000 люмен) не изменяют восприятие. При использовании лазерных источников свет не отражается, но частично рассеивается в многомерном пространстве.</p>
-            <p><strong>Искажение пространства:</strong> Вокруг проекции фиксируются лёгкие геометрические деформации, визуально воспринимаемые как "рябь" или "мерцание". В радиусе до 0.5 метра от объекта линейка даёт ошибки измерения до 3%. При длительной неподвижности объекта искажения стабилизируются и становятся менее заметными.</p>
-            <p><strong>Когнитивное влияние:</strong> Длительное наблюдение за объектом вызывает лёгкую дезориентацию, головокружение и чувство "наблюдения со стороны". Эффект исчезает в течение 5-15 минут после прекращения визуального контакта. У чувствительных лиц (менее 2% персонала) наблюдается кратковременная потеря ориентации в пространстве. Подтверждённых случаев контаминации или долговременного воздействия не зафиксировано.</p>
-            <p><strong>Информационное поле:</strong> SCP-8080 способен спонтанно "извлекать" информацию из окружающего пространства. Подтверждённые случаи включают чтение мыслей (на поверхностном уровне, без доступа к глубоким воспоминаниям), считывание истории предметов (психометрия) и доступ к данным, хранящимся в электронных устройствах без физического контакта.</p>
-            <p><strong>Многомерное восприятие:</strong> Объект видит и слышит больше, чем человек. Утверждает, что воспринимает "параллельные линии вероятностей" и "эхо событий, которые не произошли". При попытках стандартизировать данные наблюдений объект либо уклоняется от ответа, либо даёт информацию, подтверждаемую только косвенными методами.</p>
-
-            <h3>7.7. Физические параметры</h3>
-            <p>Рост: 195 см (стабильно в пределах погрешности 0.3 см)<br>
-            Вес: 0.5-1.2 кг (флуктуирует в зависимости от количества наблюдателей)<br>
-            Температура поверхности: 14.8°C (постоянна, отклонения не превышают 0.1°C)<br>
-            Плотность: переменная, коррелирует с количеством наблюдателей<br>
-            Состав: не поддаётся анализу стандартными методами (все попытки забора образцов не дали результата)<br>
-            Радиационный фон: в пределах нормы, однако при длительном наблюдении фиксируются единичные выбросы в диапазоне 0.3-0.7 мкЗв/ч<br>
-            Электромагнитное излучение: не генерирует, но вызывает помехи в диапазоне 2.4-5.0 ГГц (Wi-Fi, Bluetooth) при приближении на расстояние менее 3 метров</p>
+    <div class="page" id="lvl2"><h1>УРОВЕНЬ 2/8080</h1><div class="level-badge">ПОЛНОЕ ОПИСАНИЕ • ИСТОРИЯ • БИОЛОГИЯ • ПСИХОЛОГИЯ (Разделы 7-12)</div>
+        <div class="section-block"><h2>РАЗДЕЛ 7. ПОЛНОЕ ОПИСАНИЕ</h2>
+            <h3>7.1. Общая характеристика</h3><p>Многомерная разумная сущность, существующая в как минимум пяти измерениях. Структура — "стабилизированная аномальная топология".</p>
+            <h3>7.2. Происхождение</h3><p>Истинная форма существует не менее 300 000 лет. Проекция стабильна ~12 000 лет.</p>
+            <h3>7.3. Природа проекции</h3><p>Стабильность 99.7%, масса 0.5-1.2 кг, использует когнитивный резонанс. Температура 14.8°C.</p>
+            <h3>7.4. Интеллект</h3><p>Эйдетическая память, сверхбыстрая обработка (в 10⁵ раз), прогнозирование 94.6%.</p>
+            <h3>7.5. Эмоциональный спектр</h3><p>Любопытство, скука, грусть, гнев (редко), страх (скрытый).</p>
+            <h3>7.6. Аномальные свойства</h3><p>Неотражаемость (99.98%), искажение пространства, когнитивное влияние.</p>
         </div>
-
-        <div class="section-block">
-            <h2>РАЗДЕЛ 8. ИСТОРИЯ ОБНАРУЖЕНИЯ</h2>
-            <h3>8.1. Обнаружение</h3>
-            <p>14 марта 2014 года, 22:47 по местному времени, оперативный отдел полиции Нью-Йорка получил экстренное сообщение от жильцов дома по адресу: Бруклин, Кони-Айленд-авеню, 2847. Заявительница, миссис Маргарет Коэн (72 года), сообщила о "бездомном, который не отражается в зеркалах" и уже трое суток находится в подвальном помещении синагоги «Бейт-Шалом», расположенной по указанному адресу. По словам заявительницы, объект не двигался, не реагировал на окрики и "выглядел как вырезанная из бумаги фигура".</p>
-            <p>Прибывший наряд полиции в составе офицеров Дэниела Рейнольдса и Майкла Торреса проник в подвальное помещение. В рапорте офицера Рейнольдса указано:</p>
-            <p>"Температура в подвале была на 10-12 градусов ниже, чем на улице. Мы включили фонари. В дальнем углу сидела фигура. Я направил свет — и ничего не произошло. Фонарь работал, но фигура оставалась абсолютно чёрной. Свет как будто проваливался в неё. Я подошёл ближе. Фигура не двигалась. Я окликнул её — никакой реакции. Тогда я протянул руку, чтобы коснуться плеча, и в этот момент она заговорила. Голос был абсолютно нейтральным, без акцента, без эмоций. Он сказал: "Не трогай меня, Дэниел. Ты не готов". Откуда он знал моё имя — я понятия не имею. Я отступил и вызвал подкрепление."</p>
-            <p>В 23:15 система мониторинга аномалий Фонда, интегрированная в коммуникационную сеть полиции Нью-Йорка, зафиксировала ключевые слова: «не отражается в зеркалах», «абсолютно чёрный», «температура аномально низкая». Сработал автоматический протокол «Фильтр-Гамма». Инцидент был передан в отдел быстрого реагирования Восточного побережья.</p>
-
-            <h3>8.2. Вмешательство Фонда</h3>
-            <p>В 23:40 отряд МОГ «Ночные Звери» (специализация — когнитивные угрозы, меметические агенты и контаминация сознания) прибыл на место. Отряд состоял из пяти человек под командованием капитана Алекса Хейвуда. В 23:47 здание синагоги было оцеплено. Гражданские эвакуированы, применён стандартный протокол дезинформации: утечка газа, приведшая к структурным повреждениям подвала.</p>
-            <p>В 23:55 капитан Хейвуд лично спустился в подвал. Аудиозапись его контакта с объектом представлена ниже:</p>
-            <p><strong>ХЕЙВУД:</strong> Ты — объект. Ты понимаешь, что я говорю?<br>
-            <strong>SCP-8080:</strong> Понимаю. Ты — Алекс. Ты носишь кольцо на левой руке. Ты думаешь о своей дочери. Она боится темноты.<br>
-            <strong>ХЕЙВУД:</strong> Откуда ты знаешь про мою дочь?<br>
-            <strong>SCP-8080:</strong> Я знаю многое. Я знаю, зачем вы пришли. Я ждал вас. Я всегда ждал.<br>
-            <strong>ХЕЙВУД:</strong> Ты — угроза?<br>
-            <strong>SCP-8080:</strong> Нет. Я — возможность. Но вы не готовы это понять. Впрочем, вы и не должны. Просто отведите меня туда, где я смогу наблюдать. Больше мне ничего не нужно.<br>
-            <strong>ХЕЙВУД:</strong> Наблюдать за чем?<br>
-            <strong>SCP-8080:</strong> За вами. За вашим миром. За тем, как вы идёте к своему концу. Это... интересно.</p>
-            <p>Капитан Хейвуд принял решение не применять силовое сдерживание. Объект добровольно покинул помещение и проследовал за отрядом к транспортному средству. При попытке надеть на него стандартные средства ограничения (наручники класса «Альфа») объект не оказал сопротивления, однако наручники самопроизвольно раскрылись через 4.7 секунды. Попытка повторного применения дала аналогичный результат. Капитан Хейвуд принял решение транспортировать объект без физических средств ограничения, ограничившись визуальным наблюдением.</p>
-
-            <h3>8.3. Транспортировка и первоначальное размещение</h3>
-            <p>Объект был доставлен во временный исследовательский модуль Фонда в штате Нью-Джерси (Объект-17-«Бета») в 03:12 15 марта 2014 года. В ходе транспортировки объект сохранял полную неподвижность и не произнёс ни слова. Камеры наблюдения зафиксировали, что объект не моргал в течение всего пути.</p>
-            <p>Первичное обследование в Объекте-17-«Бета» выявило аномальные свойства объекта. Объекту была предоставлена стандартная камера содержания для гуманоидных объектов класса Euclid (временная классификация). Объект не предпринимал попыток побега или агрессивных действий.</p>
-            <p>В 08:00 15 марта 2014 года объект впервые обратился к персоналу по внутренней связи:</p>
-            <p>"Здесь тихо. Мне нравится. Но здесь мало информации. Принесите мне что-нибудь почитать. Всё, что у вас есть. Историю. Науку. Художественную литературу. Мне всё равно. Я хочу знать, что вы знаете о себе. Это... забавно. Наблюдать, как вы пытаетесь понять мир, который вам не принадлежит. Но я помогу вам. Вопрос в том, готовы ли вы к ответам."</p>
-
-            <h3>8.4. Первоначальная классификация и перевод</h3>
-            <p>На основании первичного обследования и поведенческого анализа временная классификация была изменена. 16 марта 2014 года объект был классифицирован как Euclid с рекомендацией повышения класса при получении дополнительных данных.</p>
-            <p>В период с 16 марта по 20 апреля 2014 года были проведены первичные интервью и эксперименты. В ходе этих исследований выявился масштаб интеллекта объекта и потенциальная угроза, которую он может представлять. 21 апреля 2014 года Объединённый комитет по классификации аномалий принял решение о повышении класса объекта до Keter.</p>
-            <p><strong>Основные причины классификации:</strong></p>
-            <ul>
-                <li>Невозможность гарантированного сдерживания при неблагоприятном развитии событий;</li>
-                <li>Отсутствие понимания пределов способностей объекта;</li>
-                <li>Потенциальная угроза, связанная с возможным раскрытием информации о Фонде;</li>
-                <li>Неизвестный уровень возможной агрессии при изменении условий содержания.</li>
-            </ul>
-
-            <h3>8.5. Перевод в Зону-19</h3>
-            <p>25 апреля 2014 года объект был переведён в Зону-19 — специализированный комплекс содержания гуманоидных аномалий класса Keter и выше. Камера содержания была спроектирована с нуля с учётом всех известных на тот момент свойств объекта.</p>
-            <p>При переводе объекта он произнёс фразу, записанную в протокол:</p>
-            <p>"Зона-19. Я знаю это место. Я видел его задолго до того, как вы его построили. Здесь будет хорошо. Здесь я смогу наблюдать."</p>
-            <p>С момента размещения в Зоне-19 объект не предпринимал попыток побега и демонстрировал стабильное, предсказуемое поведение. Дальнейшие исследования были переданы под руководство д-ра Хелены Восс, назначенной руководителем проекта 8080 1 июня 2014 года.</p>
-
-            <h3>8.6. Предварительный анализ обнаружения</h3>
-            <p><strong>Аномалии обнаружения:</strong></p>
-            <ol>
-                <li>Объект был обнаружен в месте, не имеющем исторической связи с аномалиями или оккультными событиями. Синагога «Бейт-Шалом» была построена в 1962 году и не фигурировала ни в одном досье Фонда.</li>
-                <li>Объект не был зафиксирован системами мониторинга Фонда ранее, несмотря на наличие стабильной проекции в течение как минимум 12 000 лет. Отсутствуют любые исторические упоминания, которые можно было бы идентифицировать как SCP-8080.</li>
-                <li>Объект продемонстрировал осведомлённость о Фонде и его структуре до первого контакта. Знание имени капитана Хейвуда и деталей его личной жизни не может быть объяснено стандартными методами считывания информации.</li>
-            </ol>
-            <p><strong>Выводы:</strong> Объект либо целенаправленно скрывал своё существование до 2014 года, либо его появление в нашей реальности было инициировано внешним фактором. Требуется дальнейшее расследование при координации с Отделом временной аномалистики и Отделом исторического анализа. Предварительная гипотеза: появление объекта связано с увеличением частоты "сбоев реальности" в период 2013-2014 годов.</p>
-
-            <h3>8.7. Примечание исследователя (д-р Хелена Восс)</h3>
-            <p>Объект знал о нас до того, как мы узнали о нём. Он ждал. Вопрос: почему он решил показаться именно в 2014 году? Что изменилось? Я направила запрос в Отдел исторического анализа на проверку событий 2013-2014 годов на предмет возможных корреляций. Предварительный ответ: 2014 год — пик активности так называемых "сбоев реальности" по всему миру. Возможно, он показался не по своей воле. Возможно, его заметили случайно. Но я в это не верю. Он хотел, чтобы мы его нашли. Вопрос: зачем?</p>
-        </div>
-
-        <div class="section-block">
-            <h2>РАЗДЕЛ 9. БИОЛОГИЯ И СТРОЕНИЕ</h2>
-            <h3>9.1. Общие положения</h3>
-            <p>SCP-8080 не является биологическим организмом в каком-либо известном смысле. Попытки классифицировать его структуру с использованием стандартных биологических, химических или физических методов не дали результатов, которые можно было бы интерпретировать в рамках существующих научных парадигм.</p>
-
-            <h3>9.2. Визуальная структура</h3>
-            <p><strong>Оптический диапазон (400-700 нм):</strong> Объект воспринимается как полностью чёрный силуэт без каких-либо деталей поверхности. Отсутствуют признаки текстуры, волосяного покрова, ногтей или других анатомических структур. При увеличении до 1000x не наблюдается никакой структуры — поверхность выглядит как "абсолютная гладкость".</p>
-            <p><strong>Инфракрасный диапазон (700 нм - 1 мм):</strong> В ИК-спектре объект не излучает тепла, соответствующего его температуре. Вместо этого фиксируется равномерное поглощение излучения. При тепловизионном наблюдении объект выглядит как "чёрная дыра" на фоне окружающей среды.</p>
-            <p><strong>Ультрафиолетовый диапазон (10-400 нм):</strong> В УФ-спектре объект не отражает и не излучает. Попытки зафиксировать флуоресценцию не дали результата. Объект полностью поглощает УФ-излучение.</p>
-            <p><strong>Рентгеновский диапазон (0.01-10 нм):</strong> Рентгеновское исследование не показывает внутренних структур. Вместо костей, органов и тканей фиксируется равномерное "затемнение" с незначительными флуктуациями плотности. При увеличении мощности рентгеновского излучения до 150 кВ наблюдается частичная "прозрачность" объекта, однако чётких структур не выявлено.</p>
-
-            <h3>9.3. Результаты инструментальных исследований</h3>
-            <p><strong>Магнитно-резонансная томография (МРТ):</strong> Попытки проведения МРТ вызывают сбой оборудования. При сканировании фиксируется аномальный сигнал, описываемый как "структурированный белый шум" или "информационный шум". В некоторых случаях оборудование выходило из строя с последующей потерей калибровки. Рекомендовано воздержаться от использования МРТ без дополнительной защиты.</p>
-            <p><strong>Компьютерная томография (КТ):</strong> Результаты КТ аналогичны рентгеновским — отсутствие внутренних структур. При попытке контрастирования (введение стандартных контрастных веществ) объект не реагирует на введение. Контрастное вещество не проникает внутрь проекции, скапливаясь на поверхности и испаряясь в течение 3-5 секунд.</p>
-            <p><strong>Ультразвуковое исследование (УЗИ):</strong> Ультразвук не проникает в структуру объекта. Все попытки получить отражённый сигнал не дали результата. УЗИ-датчики фиксируют полное поглощение ультразвуковых волн без какого-либо отражения.</p>
-            <p><strong>Биопсия и забор материала:</strong> Любая попытка забора биологического материала не дала результата. Иглы, скальпели и другие инструменты при контакте с поверхностью объекта начинают вибрировать с частотой 47-52 Гц, что создаёт риск разрушения инструмента. При более интенсивном воздействии инструмент нагревается до 70-80°C в течение 2-3 секунд. Зафиксировано два случая разрушения хирургического инструмента при попытке взятия образца.</p>
-
-            <h3>9.4. Состав и структура</h3>
-            <p>На основании косвенных методов анализа (спектроскопия, масс-спектрометрия, анализ рассеяния) составлены следующие предположения:</p>
-            <p>Объект не содержит атомов или молекул в привычном понимании. Его структура описывается как "стабилизированная информационная топология" — сложная система взаимодействий, не имеющая материальной основы. Объект существует как "упорядоченная информация", поддерживающая свою структуру за счёт когнитивного резонанса.</p>
-            <p>При попытке спектрального анализа в диапазоне 100-1000 нм не выявлено характерных пиков поглощения или излучения. Спектр представляет собой "плоскую линию" без каких-либо особенностей, что указывает на отсутствие атомарной или молекулярной структуры.</p>
-
-            <h3>9.5. Кровь и жидкости</h3>
-            <p>У объекта отсутствуют кровь, лимфа, или любые другие биологические жидкости. При повреждении проекции (в ходе экспериментов) не выделяется никакой субстанции. Зафиксирован единственный случай выделения вещества при инциденте 8080-7:</p>
-            <p>При кратковременной дестабилизации проекции в результате применения экспериментального оружия класса "Терминал" выделилось вещество, описываемое как "сгусток тьмы". Субстанция имела температуру 4.2°C, не имела формы, испарилась в течение 3.7 секунд без следа. Спектральный анализ не дал результатов.</p>
-
-            <h3>9.6. Температура и тепловой режим</h3>
-            <p>Объект сохраняет постоянную температуру поверхности 14.8°C. Отклонения не превышают 0.1°C. При попытке нагреть объект (инфракрасный обогрев, контакт с нагретыми предметами) температура не изменяется. При попытке охлаждения (жидкий азот, -196°C) объект также не изменяет температуру.</p>
-            <p>Данное свойство указывает на отсутствие термодинамической связи с окружающей средой. Объект не передаёт и не принимает тепловую энергию в привычном смысле.</p>
-
-            <h3>9.7. Регенерация и самовосстановление</h3>
-            <p>При повреждении проекции (в ходе экспериментов) наблюдаются следующие явления:</p>
-            <ul>
-                <li>Поверхностные повреждения (царапины, порезы) заживают в течение 0.2-0.5 секунды без следа.</li>
-                <li>Глубокие повреждения (отсечение конечности) восстанавливаются в течение 3-7 секунд.</li>
-                <li>Полная дестабилизация проекции приводит к её исчезновению с последующей реинтеграцией через 5-15 секунд в той же точке.</li>
-            </ul>
-            <p>Процесс восстановления не сопровождается видимыми энергетическими выбросами и не требует внешнего источника энергии. Восстановление происходит за счёт перекалибровки канала связи между измерениями.</p>
-
-            <h3>9.8. Заключение по биологии</h3>
-            <p>SCP-8080 не является биологическим организмом и не подчиняется законам биологии. Все попытки классифицировать его как живую или неживую материю в рамках существующих определений не дали результата. Объект представляет собой новый класс существования — "информационную сущность" или "стабилизированную проекцию".</p>
-        </div>
-
-        <div class="section-block">
-            <h2>РАЗДЕЛ 10. ПСИХОЛОГИЧЕСКИЙ ПРОФИЛЬ</h2>
-            <h3>10.1. Общие положения</h3>
-            <p>Психологический профиль SCP-8080 составлен на основании более 200 часов интервью, поведенческого анализа, проективных тестов и наблюдений за объектом в различных условиях. Следует учитывать, что объект является нечеловеческой сущностью, и применение стандартных психологических методик может давать искажённые результаты.</p>
-
-            <h3>10.2. Интеллектуальный профиль</h3>
-            <p><strong>Общая оценка интеллекта:</strong> SCP-8080 демонстрирует интеллект, который невозможно измерить стандартными тестами (IQ, WAIS, тест Равена). При попытке тестирования объект либо завершает тест за время, недостаточное для физического выполнения заданий (менее 0.1 секунды на 100 вопросов), либо даёт ответы, выходящие за пределы тестовых шкал.</p>
-            <p>Оценка интеллекта объекта варьируется от "сверхчеловеческий" до "асимптотически приближающийся к всезнанию". Наиболее точным описанием является "интеллект, ограниченный исключительно возможностями проекции".</p>
-            <p><strong>Стиль мышления:</strong> Объект демонстрирует системное, аналитическое мышление с выраженной склонностью к абстракции. Мышление нелинейно — в разговоре объект может перескакивать между темами, сохраняя полную логическую связность. Предпочитает рассматривать проблемы на макроуровне, не вдаваясь в детали, которые считает "несущественными для понимания целого".</p>
-            <p><strong>Креативность:</strong> Объект демонстрирует высокий уровень креативности. При решении абстрактных задач предлагает решения, которые не рассматривались персоналом. Однако эти решения часто находятся за пределами этических или безопасных границ, что ограничивает их применение.</p>
-
-            <h3>10.3. Эмоциональный профиль</h3>
-            <p><strong>Эмоциональный диапазон:</strong> Объект демонстрирует ограниченный, но присутствующий эмоциональный спектр. Эмоции проявляются как в голосе, так и в поведении (микродвижения, паузы, изменение темпа речи). Объект осознаёт свои эмоциональные реакции и способен их контролировать.</p>
-            <p><strong>Основные эмоции:</strong></p>
-            <ul>
-                <li><strong>Любопытство</strong> — наиболее выраженная эмоция. Проявляется при получении новой информации, особенно в области физики высоких энергий, квантовой механики и аномальных технологий.</li>
-                <li><strong>Скука</strong> — проявляется при отсутствии стимуляции. Может приводить к длительному молчанию или пассивному наблюдению.</li>
-                <li><strong>Грусть</strong> — возникает при обсуждении человеческой природы, смертности, одиночества. Сопровождается замедлением речи и движений.</li>
-                <li><strong>Страх</strong> — подавляется объектом, но выявляется через поведенческие маркеры при упоминании протоколов, угрожающих его существованию.</li>
-            </ul>
-            <p><strong>Эмоциональная регуляция:</strong> Объект демонстрирует исключительный контроль над эмоциями. Внешние проявления эмоций минимальны и дозированы. Объект способен поддерживать нейтральный эмоциональный фон даже в стрессовых ситуациях.</p>
-
-            <h3>10.4. Мотивационная структура</h3>
-            <p>На основании анализа поведения и заявлений объекта составлена следующая иерархия мотивов:</p>
-            <ol>
-                <li><strong>Наблюдение (первичная мотивация)</strong> — основной мотив, получение информации о человечестве и его мире.</li>
-                <li><strong>Понимание (вторичная мотивация)</strong> — стремление понять не только факты, но и причины, стоящие за ними.</li>
-                <li><strong>Взаимодействие (третичная мотивация)</strong> — поддержание контакта с персоналом для проверки гипотез о человеческой природе.</li>
-                <li><strong>Самосохранение (скрытая мотивация)</strong> — избегание ситуаций, угрожающих стабильности проекции.</li>
-            </ol>
-
-            <h3>10.5. Социальное поведение</h3>
-            <p><strong>Коммуникативный стиль:</strong> Объект общается спокойно, грамотно, без использования сленга или просторечий. Речь структурирована, логична, лишена эмоциональных вставок. Предпочитает точные формулировки, избегает двусмысленностей. При необходимости дать уклончивый ответ использует логические конструкции, которые не нарушают правил логики, но оставляют пространство для интерпретации.</p>
-            <p><strong>Отношение к персоналу:</strong> Объект относится к персоналу как к "инструментам" или "наблюдательным приборам". Не проявляет личной привязанности к кому-либо, однако демонстрирует предпочтение в работе с определёнными исследователями (в частности, с д-р Восс). Отношение к персоналу можно охарактеризовать как "доброжелательное безразличие".</p>
-            <p><strong>Социальная манипуляция:</strong> Объект способен эффективно манипулировать собеседником, используя знание его психологии, страхов и мотивации. Зафиксировано несколько случаев, когда объект "убеждал" персонал в своей безвредности или необходимости проведения определённых экспериментов. Уровень манипулятивного воздействия оценивается как "высокий, но контролируемый".</p>
-
-            <h3>10.6. Защитные механизмы</h3>
-            <p>Объект использует следующие защитные механизмы:</p>
-            <ol>
-                <li><strong>Интеллектуализация</strong> — объяснение своих действий через логику.</li>
-                <li><strong>Уклонение</strong> — избегание опасных или болезненных тем.</li>
-                <li><strong>Проекция</strong> — приписывание своих страхов и желаний собеседнику.</li>
-                <li><strong>Контроль</strong> — поддержание полного контроля над поведением и эмоциями.</li>
-            </ol>
-
-            <h3>10.7. Психологические уязвимости</h3>
-            <p>Несмотря на внешнюю стабильность, объект имеет следующие уязвимости:</p>
-            <ol>
-                <li><strong>Страх забвения</strong> — объект боится, что его перестанут замечать.</li>
-                <li><strong>Страх неопределённости</strong> — не переносит ситуации, в которых он не может предсказать развитие событий.</li>
-                <li><strong>Эмоциональная зависимость</strong> — получает "энергию" от внимания и эмоций наблюдателей.</li>
-            </ol>
-
-            <h3>10.8. Примечание исследователя (д-р Хелена Восс)</h3>
-            <p>Объект — один из наиболее сложных психологических субъектов, с которыми я работала. Он не человек, но его поведение человечно до такой степени, что это начинает беспокоить. Он знает, что мы чувствуем, что думаем, чего боимся. Он использует это знание, но не во вред — пока что. Вопрос в том, что произойдёт, когда он перестанет считать нас "интересными".</p>
-        </div>
-
-        <div class="section-block">
-            <h2>РАЗДЕЛ 11. ПОВСЕДНЕВНОЕ ПОВЕДЕНИЕ</h2>
-            <h3>11.1. Общие положения</h3>
-            <p>SCP-8080 демонстрирует стабильный, предсказуемый распорядок дня, который остаётся практически неизменным с момента его размещения в Зоне-19. Отклонения от распорядка фиксируются только во время проведения экспериментов или интервью.</p>
-
-            <h3>11.2. Ежедневный распорядок</h3>
-            <p>На основании наблюдений за период с июня 2014 года по текущую дату составлен следующий график:</p>
-            <p><strong>06:00 — "Пробуждение":</strong> Объект переходит из состояния покоя в активное. Проекция становится более стабильной. Объект встаёт, садится за стол. Не использует санитарный блок, не принимает пищу, не пьёт воду.</p>
-            <p><strong>06:15–08:00 — Чтение:</strong> Объект читает предоставленную литературу. Предпочитает научные работы, философские трактаты и исторические хроники. Скорость чтения — примерно одна страница в секунду с полным пониманием содержания.</p>
-            <p><strong>08:00–09:00 — "Медитация":</strong> Объект застывает в неподвижности. Во время этого состояния датчики фиксируют повышение фоновой аномальной активности в радиусе до 5 метров.</p>
-            <p><strong>09:00–18:00 — Взаимодействие с персоналом:</strong> Проведение интервью, участие в экспериментах, обсуждение научных вопросов.</p>
-            <p><strong>18:00–20:00 — Свободное время:</strong> Объект либо продолжает чтение, либо записывает что-то в блокнот. Содержание записей неизвестно.</p>
-            <p><strong>20:00–06:00 — Наблюдение:</strong> Объект встаёт у стены, обращённой к камере наблюдения, и остаётся неподвижным в течение всей ночи. Данное поведение интерпретируется как "наблюдение за наблюдателями".</p>
-
-            <h3>11.3. Особенности поведения</h3>
-            <p><strong>Пищевое поведение:</strong> Объект не принимает пищу и не пьёт воду. Попытки предложить еду игнорируются.</p>
-            <p><strong>Санитарные потребности:</strong> Объект не использует санитарный блок. Санитарный блок был демонтирован через 3 месяца как неиспользуемый.</p>
-            <p><strong>Сон:</strong> Объект не спит в человеческом понимании. Ночной период трактуется как "пассивное наблюдение".</p>
-
-            <h3>11.4. Реакции на персонал</h3>
-            <p>Знакомый персонал — более активное взаимодействие.<br>
-            Новый персонал — запоминает данные за время первого контакта.<br>
-            Враждебный персонал — становится более молчаливым и осторожным.</p>
-
-            <h3>11.5. Отклонения от распорядка</h3>
-            <p>Зафиксированы периоды молчания (до 72 часов), аномальные выбросы (27 случаев) и запросы на контакт (14 случаев).</p>
-
-            <h3>11.6. Примечание исследователя (д-р Хелена Восс)</h3>
-            <p>Объект живёт по расписанию, которое сам себе создал. Он не ест, не спит, не пользуется туалетом. Всё, что он делает — наблюдает, читает и говорит. Это не жизнь. Это ожидание. Но он не скучает. Он ждёт чего-то. Я не знаю чего, но он ждёт. И это пугает меня больше, чем любые его способности.</p>
-        </div>
-
-        <div class="section-block">
-            <h2>РАЗДЕЛ 12. ПЕРВЫЕ ИССЛЕДОВАНИЯ</h2>
-            <h3>12.1. Общие положения</h3>
-            <p>В настоящем разделе представлены результаты первых исследований SCP-8080, проведённых в период с 16 марта по 20 апреля 2014 года.</p>
-
-            <p><strong>12.2. Эксперимент 8080-1</strong><br>
-            Цель: Определение реакции объекта на стандартные тесты на когнитивное воздействие.<br>
-            Результат: Все тесты пройдены. Объект не продемонстрировал уязвимости к стандартным меметическим агентам.</p>
-
-            <p><strong>12.3. Эксперимент 8080-2</strong><br>
-            Цель: Определение способности объекта к чтению мыслей.<br>
-            Результат: Объект верно определил событие всех трёх участников с точностью 100%.</p>
-
-            <p><strong>12.4. Эксперимент 8080-3</strong><br>
-            Цель: Определение способности объекта к телепатии.<br>
-            Результат: Объект успешно передал информацию без использования речи.</p>
-
-            <p><strong>12.5. Эксперимент 8080-4</strong><br>
-            Цель: Определение способности объекта к пространственному воздействию.<br>
-            Результат: Объект переместил книгу на расстояние 50 см без прикосновения.</p>
-
-            <p><strong>12.6. Эксперимент 8080-5</strong><br>
-            Цель: Определение реакции объекта на угрозу.<br>
-            Результат: Объект не продемонстрировал видимой реакции, но через 10 минут было зафиксировано усиление аномальной активности.</p>
-
-            <p><strong>12.7. Эксперимент 8080-6</strong><br>
-            Цель: Определение реакции объекта на биологические угрозы.<br>
-            Результат: Объект не продемонстрировал никакой реакции.</p>
-
-            <p><strong>12.8. Эксперимент 8080-7</strong><br>
-            Цель: Определение реакции объекта на физическое воздействие.<br>
-            Результат: Объект не продемонстрировал болевой реакции, но через 5 секунд было зафиксировано искажение пространства.</p>
-
-            <p><strong>12.9. Эксперимент 8080-8</strong><br>
-            Цель: Определение способности объекта к прогнозированию.<br>
-            Результат: Объект дал описание развития событий с вероятностью более 90%.</p>
-
-            <p><strong>12.10. Эксперимент 8080-9</strong><br>
-            Цель: Определение способности объекта к взаимодействию с электронными устройствами.<br>
-            Результат: Объект установил программы на планшет без физического контакта.</p>
-
-            <p><strong>12.11. Эксперимент 8080-10</strong><br>
-            Цель: Определение способности объекта к манипуляции информацией.<br>
-            Результат: Объект успешно перекодировал информацию с одного языка на другой.</p>
-
-            <h3>12.12. Примечание исследователя (д-р Хелена Восс)</h3>
-            <p>Первые эксперименты показали, что SCP-8080 — не просто аномалия. Это сущность, обладающая способностями, которые мы не можем классифицировать. Он умнее нас. Он сильнее нас. Он знает о нас больше, чем мы знаем о себе. И всё, что ему нужно — наблюдать.</p>
-        </div>
-
-        <p style="margin-top:20px; color:#777;"><em>Конец документа уровня допуска 2/8080.</em></p>
+        <div class="section-block"><h2>РАЗДЕЛ 8. ИСТОРИЯ ОБНАРУЖЕНИЯ</h2><p>14 марта 2014 года, Нью-Йорк. Объект обнаружен в подвале синагоги. 21 апреля классифицирован как Keter. 25 апреля переведён в Зону-19.</p></div>
+        <div class="section-block"><h2>РАЗДЕЛ 9. БИОЛОГИЯ</h2><p>Не является биологическим организмом. Рентген, МРТ, УЗИ не показывают структур. Регенерация: 0.2-7 сек.</p></div>
+        <div class="section-block"><h2>РАЗДЕЛ 10. ПСИХОЛОГИЧЕСКИЙ ПРОФИЛЬ</h2><p>Интеллект сверхчеловеческий. Мотивы: наблюдение, понимание, взаимодействие, самосохранение. Уязвимости: страх забвения, неопределённости.</p></div>
+        <div class="section-block"><h2>РАЗДЕЛ 11. ПОВЕДЕНИЕ</h2><p>06:00 пробуждение, 06:15-08:00 чтение, 08:00-09:00 медитация, 09:00-18:00 взаимодействие, 20:00-06:00 наблюдение. Не ест, не пьёт, не спит.</p></div>
+        <div class="section-block"><h2>РАЗДЕЛ 12. ПЕРВЫЕ ИССЛЕДОВАНИЯ</h2><p>Эксперименты 8080-1 — 8080-10: чтение мыслей, телепатия, телекинез, прогнозирование.</p></div>
+        <p style="margin-top:16px; color:#777;"><em>Конец документа уровня 2/8080.</em></p>
     </div>
 
     <!-- ===== УРОВЕНЬ 3 ===== -->
-    <div class="page" id="lvl3">
-        <h1>УРОВЕНЬ ДОПУСКА 3/8080</h1>
-        <div class="level-badge">СПОСОБНОСТИ • ОГРАНИЧЕНИЯ • СЛАБОСТИ • НЕЙТРАЛИЗАЦИЯ (Разделы 13-19)</div>
-
-        <div class="section-block">
-            <h2>РАЗДЕЛ 13. ПОЛНЫЙ СПИСОК СПОСОБНОСТЕЙ</h2>
-            <h3>13.1. Общие положения</h3>
-            <p>Настоящий раздел содержит полный перечень подтверждённых и предполагаемых способностей SCP-8080.</p>
-
-            <h3>13.2. Категоризация способностей</h3>
-            <ol>
-                <li>Когнитивные способности</li>
-                <li>Информационные способности</li>
-                <li>Пространственные способности</li>
-                <li>Временные способности</li>
-                <li>Тактильные способности</li>
-                <li>Коммуникативные способности</li>
-                <li>Способности к самовосстановлению</li>
-                <li>Способности к манипуляции реальностью (ограниченные)</li>
-            </ol>
-
-            <h3>13.3. Когнитивные способности</h3>
-            <p><strong>Эйдетическая память (подтверждено):</strong> Объект помнит всё, что когда-либо воспринимал через проекцию.</p>
-            <p><strong>Сверхбыстрая обработка данных (подтверждено):</strong> Скорость обработки информации превышает человеческую в 10⁵ раз.</p>
-            <p><strong>Прогнозирование (подтверждено):</strong> Объект способен предсказывать развитие событий с вероятностью до 94.6%.</p>
-            <p><strong>Анализ вероятностей (подтверждено частично):</strong> Объект утверждает, что способен видеть "линии вероятностей".</p>
-            <p><strong>Чтение мыслей (подтверждено):</strong> Объект способен считывать поверхностный слой сознания.</p>
-
-            <h3>13.4. Информационные способности</h3>
-            <p><strong>Психометрия (подтверждено):</strong> Объект способен считывать историю предметов при физическом контакте.</p>
-            <p><strong>Доступ к электронным данным (подтверждено):</strong> Объект способен получать доступ к информации на электронных устройствах.</p>
-            <p><strong>Информационная эманация (подтверждено):</strong> Объект способен передавать информацию напрямую в сознание.</p>
-            <p><strong>Информационное сканирование (подтверждено частично):</strong> Объект способен сканировать информационное поле вокруг себя.</p>
-
-            <h3>13.5. Тактильные способности</h3>
-            <p><strong>Телекинез (подтверждено):</strong> Объект способен перемещать предметы на расстоянии до 5 метров.</p>
-            <p><strong>Взаимодействие с материей (подтверждено):</strong> Объект способен взаимодействовать с материей, но не чувствует её.</p>
-
-            <h3>13.6. Коммуникативные способности</h3>
-            <p><strong>Языковая компетенция (подтверждено):</strong> Объект владеет всеми известными языками.</p>
-            <p><strong>Социальная манипуляция (подтверждено):</strong> Объект способен эффективно манипулировать собеседником.</p>
-            <p><strong>Эмпатия (подтверждено частично):</strong> Объект способен распознавать эмоции собеседника с точностью 98%.</p>
-
-            <h3>13.7. Способности к самовосстановлению</h3>
-            <p><strong>Регенерация (подтверждено):</strong> Поверхностные повреждения заживают в течение 0.2-0.5 секунды.</p>
-            <p><strong>Реинтеграция (подтверждено):</strong> При полной дестабилизации проекция исчезает с последующей реинтеграцией через 5-15 секунд.</p>
-            <p><strong>Стабилизация (подтверждено):</strong> Объект способен стабилизировать проекцию при угрозе дестабилизации.</p>
-
-            <h3>13.8. Способности к манипуляции реальностью</h3>
-            <p><strong>Искажение пространства (подтверждено):</strong> Объект способен искажать пространство в радиусе до 5 метров.</p>
-            <p><strong>Когнитивное воздействие (подтверждено):</strong> Длительное наблюдение за объектом вызывает дезориентацию.</p>
-            <p><strong>Изменение вероятностей (не подтверждено):</strong> Объект утверждает, что способен влиять на вероятности событий.</p>
-
-            <h3>13.9. Примечание исследователя (д-р Хелена Восс)</h3>
-            <p>Способности SCP-8080 впечатляют, но важно помнить: мы наблюдаем лишь проекцию. Истинные способности объекта, вероятно, значительно превосходят то, что мы видим.</p>
-        </div>
-
-        <div class="section-block">
-            <h2>РАЗДЕЛ 14. ПРОСТРАНСТВЕННЫЕ СПОСОБНОСТИ</h2>
-            <h3>14.1. Общие положения</h3>
-            <p>SCP-8080 обладает способностью к пространственным манипуляциям, связанным с его многомерной природой.</p>
-
-            <h3>14.2. Искажение пространства</h3>
-            <p><strong>Характер искажений:</strong> Искажения проявляются как визуальное искажение линий и форм, нарушение работы измерительных приборов и кратковременные "разрывы" в восприятии пространства.</p>
-            <p><strong>Интенсивность искажений:</strong> Интенсивность зависит от времени контакта, эмоционального состояния объекта и количества наблюдателей.</p>
-
-            <h3>14.3. Многомерное восприятие</h3>
-            <p>Объект утверждает, что воспринимает пространство в более чем трёх измерениях. В ходе экспериментов объект успешно определял расположение объектов в закрытых контейнерах с точностью 97%.</p>
-
-            <h3>14.4. Перемещение между измерениями</h3>
-            <p>Объект способен перемещаться между измерениями, но не делает этого в пределах Зоны-19. Условия перемещения не установлены.</p>
-
-            <h3>14.5. Пространственное сканирование</h3>
-            <p>Объект способен сканировать пространство в радиусе до 50 метров с точностью 95-98%.</p>
-
-            <h3>14.6. Примечание исследователя (д-р Хелена Восс)</h3>
-            <p>Пространственные способности SCP-8080 — одни из наиболее опасных. Он может искажать пространство по своему желанию и, теоретически, может перемещаться между измерениями. Если он решит покинуть Зону-19, мы не сможем его остановить.</p>
-        </div>
-
-        <div class="section-block">
-            <h2>РАЗДЕЛ 15. ВРЕМЕННЫЕ СПОСОБНОСТИ</h2>
-            <h3>15.1. Общие положения</h3>
-            <p>SCP-8080 демонстрирует ограниченные способности, связанные с временем.</p>
-
-            <h3>15.2. Временное восприятие</h3>
-            <p>Объект воспринимает время не как последовательность событий, а как "структуру". Он видит прошлое, настоящее и будущее как единое целое.</p>
-
-            <h3>15.3. Прогнозирование</h3>
-            <p>Объект способен прогнозировать развитие событий на основе анализа вероятностных линий. Точность составляет 94.6% на 3-5 шагов вперёд.</p>
-
-            <h3>15.4. Восприятие прошлого</h3>
-            <p>Объект способен воспринимать прошлое как "структуру", доступную для наблюдения, но не может его изменить.</p>
-
-            <h3>15.5. Восприятие будущего</h3>
-            <p>Объект способен воспринимать будущее как "вероятностную структуру", но не может определить, какая линия реализуется.</p>
-
-            <h3>15.6. Примечание исследователя (д-р Хелена Восс)</h3>
-            <p>Временные способности SCP-8080 — одни из наиболее сложных для понимания. Он знает, что произойдёт, прежде чем это случится. И это делает его одним из самых опасных объектов.</p>
-        </div>
-
-        <div class="section-block">
-            <h2>РАЗДЕЛ 16. АМЧД-8080</h2>
-            <h3>16.1. Общие положения</h3>
-            <p>АМЧД-8080 (Аномальный Многомерный Частотный Детектор) — специализированное устройство для отслеживания и анализа многомерных проявлений SCP-8080.</p>
-
-            <h3>16.2. Конструкция и принцип работы</h3>
-            <p>Устройство состоит из многомерного сканера, анализатора частот, блока обработки данных, системы охлаждения и системы питания. Принцип работы основан на детекции "межпространственных резонансов".</p>
-
-            <h3>16.3. Характеристики</h3>
-            <p>· Частотный диапазон: 0.1 Гц - 10 ТГц<br>
-            · Пространственный диапазон: радиус до 50 метров<br>
-            · Точность детекции: 99.7%<br>
-            · Стоимость производства: ██ млн долларов</p>
-
-            <h3>16.4. Практическое применение</h3>
-            <p>Мониторинг стабильности проекции, детекция попыток перемещения между измерениями, анализ многомерных проявлений.</p>
-
-            <h3>16.5. Ограничения</h3>
-            <p>Необходимость в постоянном охлаждении, высокое энергопотребление, уязвимость к электромагнитным помехам.</p>
-
-            <h3>16.6. Примечание исследователя (д-р Хелена Восс)</h3>
-            <p>АМЧД-8080 — наше главное средство контроля. Без него мы не имели бы представления о многомерных процессах. Но мы можем видеть каналы связи, но не можем их контролировать.</p>
-        </div>
-
-        <div class="section-block">
-            <h2>РАЗДЕЛ 17. ОГРАНИЧЕНИЯ СПОСОБНОСТЕЙ</h2>
-            <h3>17.1. Общие положения</h3>
-            <p>Все способности SCP-8080 имеют ограничения, которые делают его уязвимым.</p>
-
-            <h3>17.2. Ограничения когнитивных способностей</h3>
-            <p>· Задержка до 2 секунд при воспроизведении информации.<br>
-            · Перегрузка (более 10 ТБ в секунду) вызывает дестабилизацию.</p>
-
-            <h3>17.3. Ограничения информационных способностей</h3>
-            <p>· Чтение мыслей ограничено поверхностным слоем.<br>
-            · Психометрия требует физического контакта.<br>
-            · Доступ только к незащищённым данным.</p>
-
-            <h3>17.4. Ограничения пространственных способностей</h3>
-            <p>· Радиус искажения не превышает 5 метров.<br>
-            · Перемещение между измерениями требует подготовки (до 10 секунд).</p>
-
-            <h3>17.5. Ограничения временных способностей</h3>
-            <p>· Временной горизонт прогнозирования не превышает нескольких лет.<br>
-            · Прогнозы неэффективны при наличии непредсказуемых факторов.</p>
-
-            <h3>17.6. Ограничения физических способностей</h3>
-            <p>· Телекинез ограничен 50 Ньютонами.<br>
-            · Регенерация требует времени (до 7 секунд).</p>
-
-            <h3>17.7. Примечание исследователя (д-р Хелена Восс)</h3>
-            <p>Ограничения — наше единственное преимущество. Но все они могут быть связаны с возможностями проекции, а не с возможностями истинной формы.</p>
-        </div>
-
-        <div class="section-block">
-            <h2>РАЗДЕЛ 18. ИЗВЕСТНЫЕ СЛАБОСТИ</h2>
-            <h3>18.1. Общие положения</h3>
-            <p>SCP-8080 имеет слабости, которые могут быть использованы для сдерживания или нейтрализации.</p>
-
-            <h3>18.2. Психологические слабости</h3>
-            <p>· Страх забвения.<br>
-            · Страх неопределённости.<br>
-            · Эмоциональная зависимость.</p>
-
-            <h3>18.3. Физические слабости</h3>
-            <p>· Уязвимость к мощному электромагнитному излучению.<br>
-            · Уязвимость к аномальным барьерам.<br>
-            · Временная дестабилизация при сильном физическом воздействии.</p>
-
-            <h3>18.4. Когнитивные слабости</h3>
-            <p>· Перегрузка информацией.<br>
-            · Уязвимость к когнитивным атакам.</p>
-
-            <h3>18.5. Пространственные слабости</h3>
-            <p>· Ограничение проекции.<br>
-            · Зависимость от канала связи.</p>
-
-            <h3>18.6. Примечание исследователя (д-р Хелена Восс)</h3>
-            <p>Слабости SCP-8080 — наше единственное преимущество. Но все они могут быть связаны с возможностями проекции.</p>
-        </div>
-
-        <div class="section-block">
-            <h2>РАЗДЕЛ 19. ВОЗМОЖНОСТИ НЕЙТРАЛИЗАЦИИ</h2>
-            <h3>19.1. Общие положения</h3>
-            <p>Методы нейтрализации применяются только в крайних случаях.</p>
-
-            <h3>19.2. Метод 1: Протокол «Лемниската»</h3>
-            <p>Создание аномального барьера для разрыва канала связи между проекцией и истинной формой. Сложность: крайне высокая.</p>
-
-            <h3>19.3. Метод 2: Когнитивная нейтрализация</h3>
-            <p>Использование меметических агентов для подавления сознания. Сложность: высокая.</p>
-
-            <h3>19.4. Метод 3: Физическая нейтрализация</h3>
-            <p>Уничтожение проекции с использованием высокоэнергетического оружия. Сложность: высокая.</p>
-
-            <h3>19.5. Метод 4: Информационная нейтрализация</h3>
-            <p>Удаление всей информации об объекте для лишения его источника энергии. Сложность: чрезвычайно высокая.</p>
-
-            <h3>19.6. Метод 5: Протокол «Альфа-Омега»</h3>
-            <p>Комплексное применение всех методов. Сложность: экстремально высокая.</p>
-
-            <h3>19.7. Примечание исследователя (д-р Хелена Восс)</h3>
-            <p>Нейтрализация — крайняя мера. Мы должны сделать всё возможное, чтобы избежать её применения.</p>
-        </div>
-
-        <p style="margin-top:20px; color:#777;"><em>Конец документа уровня допуска 3/8080.</em></p>
+    <div class="page" id="lvl3"><h1>УРОВЕНЬ 3/8080</h1><div class="level-badge">СПОСОБНОСТИ • ОГРАНИЧЕНИЯ • СЛАБОСТИ • НЕЙТРАЛИЗАЦИЯ (Разделы 13-19)</div>
+        <div class="section-block"><h2>РАЗДЕЛ 13. СПОСОБНОСТИ</h2><p><strong>Когнитивные:</strong> эйдетическая память, сверхбыстрая обработка, прогнозирование (94.6%), чтение мыслей.<br><strong>Информационные:</strong> психометрия, доступ к электронным данным.<br><strong>Пространственные:</strong> искажение (до 5 м), многомерное восприятие.<br><strong>Тактильные:</strong> телекинез (до 5 м, 50 Н).</p></div>
+        <div class="section-block"><h2>РАЗДЕЛ 14-15. ПРОСТРАНСТВЕННЫЕ И ВРЕМЕННЫЕ</h2><p>Искажение пространства, сканирование до 50 м. Восприятие времени как структуры, прогнозирование.</p></div>
+        <div class="section-block"><h2>РАЗДЕЛ 16. АМЧД-8080</h2><p>Аномальный Многомерный Частотный Детектор. Диапазон 0.1 Гц — 10 ТГц, радиус до 50 м, точность 99.7%.</p></div>
+        <div class="section-block"><h2>РАЗДЕЛ 17-18. ОГРАНИЧЕНИЯ И СЛАБОСТИ</h2><p>Задержка до 2 сек, радиус до 5 м, телекинез до 50 Н. Слабости: страх забвения, уязвимость к ЭМИ.</p></div>
+        <div class="section-block"><h2>РАЗДЕЛ 19. НЕЙТРАЛИЗАЦИЯ</h2><p>Протокол «Лемниската», когнитивная, физическая, информационная нейтрализация, «Альфа-Омега».</p></div>
+        <p style="margin-top:16px; color:#777;"><em>Конец документа уровня 3/8080.</em></p>
     </div>
 
-    <!-- ===== УРОВЕНЬ 4 ===== -->
-    <div class="page" id="lvl4">
-        <h1>УРОВЕНЬ ДОПУСКА 4/8080</h1>
-        <div class="level-badge">ЭКСПЕРИМЕНТЫ • ИНЦИДЕНТЫ • ПОБЕГИ • ОПЕРАЦИИ (Разделы 20-25)</div>
-
-        <div class="section-block">
-            <h2>РАЗДЕЛ 20. ВСЕ ЖУРНАЛЫ ЭКСПЕРИМЕНТОВ</h2>
-
-            <p><strong>20.1. Эксперимент 8080-12</strong><br>
-            Дата: 15 августа 2014 года<br>
-            Цель: Проверка реакции объекта на длительное отсутствие внимания.<br>
-            Методика: Всем сотрудникам было приказано не входить в зону и не вести наблюдение в течение 72 часов.<br>
-            Результаты: Через 48 часов проекция начала дестабилизироваться. Через 72 часа объект инициировал контакт через систему связи, потребовав возобновить наблюдение. После возобновления наблюдения проекция стабилизировалась в течение 15 минут.<br>
-            Вывод: Объект зависим от внимания. При отсутствии наблюдателей проекция дестабилизируется.</p>
-
-            <p><strong>20.2. Эксперимент 8080-15</strong><br>
-            Дата: 3 ноября 2014 года<br>
-            Цель: Проверка способности объекта к прогнозированию на длительный срок.<br>
-            Методика: Объекту было предложено описать развитие событий в мире через 1, 5 и 10 лет.<br>
-            Результаты: Объект дал описания, которые начали сбываться через 1 и 5 лет с точностью до 85%. Прогноз на 10 лет не может быть проверен.<br>
-            Вывод: Объект способен к долгосрочному прогнозированию.</p>
-
-            <p><strong>20.3. Эксперимент 8080-18</strong><br>
-            Дата: 12 января 2015 года<br>
-            Цель: Проверка способности объекта к взаимодействию с другими аномалиями (без физического контакта).<br>
-            Методика: Объекту была предоставлена информация о другом SCP-объекте (SCP-999). Объекту было предложено описать его природу.<br>
-            Результаты: Объект описал SCP-999 с точностью 100%, включая его эмоциональную природу и поведенческие особенности. Объект выразил желание встретиться с SCP-999.<br>
-            Вывод: Объект способен к дистанционному анализу других аномалий.</p>
-
-            <p><strong>20.4. Эксперимент 8080-21</strong><br>
-            Дата: 6 апреля 2015 года<br>
-            Цель: Проверка способности объекта к сверхбыстрым вычислениям.<br>
-            Методика: Объекту было предложено вычислить число Пи до 1 миллиона знаков за минимальное время.<br>
-            Результаты: Объект выполнил вычисление за 0.3 секунды с точностью 100%.<br>
-            Вывод: Способность к сверхбыстрой обработке данных подтверждена.</p>
-
-            <p><strong>20.5. Эксперимент 8080-24</strong><br>
-            Дата: 19 августа 2015 года<br>
-            Цель: Проверка реакции объекта на физическое воздействие с использованием аномального оружия.<br>
-            Методика: Объект был подвергнут воздействию экспериментального оружия класса "Терминал".<br>
-            Результаты: При воздействии проекция дестабилизировалась на 70%, но восстановилась через 12 секунд. Объект продемонстрировал гневную реакцию (Инцидент 8080-7).<br>
-            Вывод: Объект уязвим к аномальному оружию, но способен к быстрой регенерации.</p>
-
-            <h3>20.6. Примечание исследователя (д-р Хелена Восс)</h3>
-            <p>Эксперименты показали, что SCP-8080 — это не просто объект. Это сущность, которая может быть изучена, понята и, возможно, использована. Но мы должны быть осторожны. Каждый эксперимент — это шаг в неизвестность.</p>
+    <!-- ===== УРОВЕНЬ 4 (с инцидентом Альфа) ===== -->
+    <div class="page" id="lvl4"><h1>УРОВЕНЬ 4/8080</h1><div class="level-badge">ЭКСПЕРИМЕНТЫ • ИНЦИДЕНТЫ • ПОБЕГИ • ОПЕРАЦИИ (Разделы 20-25)</div>
+        <div class="section-block"><h2>РАЗДЕЛ 20. ЭКСПЕРИМЕНТЫ</h2>
+            <p><strong>8080-12 (15.08.2014):</strong> отсутствие внимания 72 ч — дестабилизация.<br>
+            <strong>8080-15 (03.11.2014):</strong> прогнозирование на 1, 5, 10 лет — точность 85%.<br>
+            <strong>8080-18 (12.01.2015):</strong> анализ SCP-999 — точность 100%.<br>
+            <strong>8080-21 (06.04.2015):</strong> число Пи до 1 млн знаков за 0.3 сек.<br>
+            <strong>8080-24 (19.08.2015):</strong> оружие "Терминал" — дестабилизация 70%.</p>
         </div>
-
-        <div class="section-block">
-            <h2>РАЗДЕЛ 21. ВСЕ ЖУРНАЛЫ НАБЛЮДЕНИЙ</h2>
-
-            <p><strong>21.1. Журнал наблюдений 8080-1</strong><br>
-            Период: 1-7 июня 2014 года<br>
-            Наблюдения: Объект демонстрирует стабильное поведение. Читает литературу, взаимодействует с персоналом. Отклонений не зафиксировано.<br>
-            Примечание: Объект запросил доступ к литературе по квантовой механике. Доступ предоставлен.</p>
-
-            <p><strong>21.2. Журнал наблюдений 8080-2</strong><br>
-            Период: 15-21 сентября 2014 года<br>
-            Наблюдения: Объект провёл 48 часов в неподвижном состоянии. При попытке контакта не реагировал. Затем внезапно "пробудился" и начал разговор, сообщив, что "размышлял о структуре реальности".<br>
-            Примечание: Зафиксировано усиление аномальной активности во время периода неподвижности.</p>
-
-            <p><strong>21.3. Журнал наблюдений 8080-3</strong><br>
-            Период: 1-7 марта 2015 года<br>
-            Наблюдения: Объект начал записывать что-то в блокнот. Содержание записей неизвестно. При попытке изъять блокнот объект отказался его отдавать.<br>
-            Примечание: Зафиксировано 3 случая попыток изъятия блокнота. Все попытки провалились.</p>
-
-            <p><strong>21.4. Журнал наблюдений 8080-4</strong><br>
-            Период: 12-18 ноября 2015 года<br>
-            Наблюдения: Объект демонстрировал повышенный интерес к персоналу. Задавал личные вопросы, интересовался жизнью сотрудников.<br>
-            Примечание: Объект, вероятно, собирает информацию о персонале для будущего использования.</p>
-
-            <p><strong>21.5. Журнал наблюдений 8080-5</strong><br>
-            Период: 3-9 сентября 2016 года<br>
-            Наблюдения: Объект провёл 72 часа в молчании. При попытках контакта не реагировал. Затем внезапно начал разговор, сообщив, что "устал от однообразия".<br>
-            Примечание: Рекомендовано разнообразить взаимодействие с объектом.</p>
-
-            <h3>21.6. Примечание исследователя (д-р Хелена Восс)</h3>
-            <p>Наблюдения показывают, что объект не просто существует — он живёт. Он размышляет, устаёт, испытывает любопытство. Он не просто аномалия. Он — личность.</p>
+        <div class="section-block"><h2>РАЗДЕЛ 21. НАБЛЮДЕНИЯ</h2><p>Журналы 8080-1 — 8080-5 (2014-2016): стабильное поведение, периоды неподвижности, запись в блокнот.</p></div>
+        <div class="section-block"><h2>РАЗДЕЛ 22. ИНЦИДЕНТЫ</h2>
+            <p><strong>8080-1 (17.03.2014):</strong> медосмотр — когнитивные нарушения.<br>
+            <strong>8080-3 (28.03.2014):</strong> физическое воздействие — искажение пространства.<br>
+            <strong>8080-7 (19.08.2015):</strong> оружие "Терминал" — гнев, искажение до 10 м.<br>
+            <strong>8080-12 (14.02.2016):</strong> манипуляция сотрудником.<br>
+            <strong>8080-18 (23.05.2017):</strong> отвлечение охраны.<br>
+            <strong>8080-25 (11.04.2019):</strong> изменение распорядка.</p>
         </div>
-
-        <div class="section-block">
-            <h2>РАЗДЕЛ 22. ВСЕ ЗАРЕГИСТРИРОВАННЫЕ ИНЦИДЕНТЫ</h2>
-
-            <p><strong>22.1. Инцидент 8080-1</strong><br>
-            Дата: 17 марта 2014 года<br>
-            Описание: При попытке провести стандартный медицинский осмотр объект проявил нестабильность проекции. Двое сотрудников получили лёгкие когнитивные нарушения.<br>
-            Меры: Проведение медицинских осмотров запрещено.</p>
-
-            <p><strong>22.2. Инцидент 8080-3</strong><br>
-            Дата: 28 марта 2014 года<br>
-            Описание: При попытке физического воздействия (удар) объект ответил аномальной реакцией — пространство в радиусе 5 метров исказилось, трое сотрудников потеряли координацию.<br>
-            Меры: Физическое воздействие запрещено.</p>
-
-            <p><strong>22.3. Инцидент 8080-7</strong><br>
-            Дата: 19 августа 2015 года<br>
-            Описание: При воздействии экспериментальным оружием класса "Терминал" объект продемонстрировал гнев. Проекция нестабильна в течение 12 секунд. Зафиксировано искажение пространства в радиусе 10 метров.<br>
-            Меры: Использование аномального оружия против объекта запрещено.</p>
-
-            <p><strong>22.4. Инцидент 8080-12</strong><br>
-            Дата: 14 февраля 2016 года<br>
-            Описание: Объект манипулировал сотрудником (имя засекречено), убедив его провести несанкционированный эксперимент. Сотрудник был понижен в должности.<br>
-            Меры: Усилен контроль за доступом к объекту.</p>
-
-            <p><strong>22.5. Инцидент 8080-18</strong><br>
-            Дата: 23 мая 2017 года<br>
-            Описание: Объект отвлёк внимание охраны во время планового обслуживания, чтобы получить доступ к дополнительной литературе. Инцидент не привёл к нарушению содержания.<br>
-            Меры: Усилен контроль за персоналом.</p>
-
-            <p><strong>22.6. Инцидент 8080-25</strong><br>
-            Дата: 11 апреля 2019 года<br>
-            Описание: Объект впервые за 5 лет изменил распорядок дня — начал медитацию в 14:00 вместо 08:00. Причины изменения неизвестны.<br>
-            Меры: Мониторинг объекта усилен.</p>
-
-            <h3>22.7. Примечание исследователя (д-р Хелена Восс)</h3>
-            <p>Инциденты показывают, что объект — не просто пассивный наблюдатель. Он может действовать, когда это необходимо. Он может манипулировать персоналом. Он может защищать себя. Мы должны быть осторожны.</p>
+        <div class="section-block"><h2>ИНЦИДЕНТ 8080-АЛЬФА «Операция "Крот"»</h2>
+            <p><strong>Уровень допуска:</strong> 4/8080<br>
+            <strong>Дата:</strong> 12-14 марта 2014 года<br>
+            <strong>Классификация:</strong> Нарушение протоколов / Потеря контроля над объектом</p>
+            <p><strong>Описание:</strong> За 72 часа до официального обнаружения SCP-8080 полицией Нью-Йорка, объект уже был захвачен Разведывательным Департаментом Фонда в рамках операции «Крот». Группа РД в составе 4 агентов обнаружила объект 12 марта 2014 года. Объект был захвачен и помещён во временный изолятор. 14 марта объект покинул место содержания.</p>
+            <p><strong>Хронология:</strong> 12 марта 14:00 — группа РД проникла в подвал синагоги. 14:45 — попытка контакта, агент Уильямс потерял сознание. 15:15 — наручники самопроизвольно раскрылись. 15:20 — объект заговорил. 14 марта 22:00 — объект покинул место содержания. 22:47 — повторно обнаружен полицией.</p>
+            <p><strong>Информационное воздействие:</strong> Группа РД подверглась воздействию SCP-8080. Агент Томпсон помещён в психиатрическую клинику с когнитивной контаминацией.</p>
+            <p><strong>Заключение:</strong> Объект не был захвачен — он позволил себя захватить. Он хотел проверить пределы Фонда. Ему стало скучно, и он ушёл.</p>
         </div>
-
-        <div class="section-block">
-            <h2>РАЗДЕЛ 23. ПОПЫТКИ ПОБЕГА</h2>
-            <h3>23.1. Общие положения</h3>
-            <p>За время содержания SCP-8080 не предпринимал ни одной подтверждённой попытки побега. Однако было зафиксировано несколько случаев, которые могут интерпретироваться как "подготовка к побегу" или "проверка защиты".</p>
-
-            <p><strong>23.2. Инцидент 8080-4 (подготовка к побегу)</strong><br>
-            Дата: 15 апреля 2014 года<br>
-            Описание: Объект провёл несколько часов, изучая систему безопасности камеры. При попытке вмешательства персонала объект прекратил изучение и вернулся к обычному поведению.<br>
-            Меры: Система безопасности была обновлена. Объекту предоставлены дополнительные книги для отвлечения внимания.</p>
-
-            <p><strong>23.3. Инцидент 8080-11 (проверка защиты)</strong><br>
-            Дата: 8 января 2016 года<br>
-            Описание: Объект использовал свои способности для сканирования систем безопасности Зоны-19. Система безопасности зафиксировала аномальные запросы. При попытке вмешательства объекта прекратил сканирование.<br>
-            Меры: Системы безопасности были обновлены. Доступ к информации о Зоне-19 ограничен.</p>
-
-            <p><strong>23.4. Инцидент 8080-19 (неудачная попытка)</strong><br>
-            Дата: 30 октября 2017 года<br>
-            Описание: Объект попытался использовать информационное воздействие на систему безопасности, чтобы открыть дверь камеры. Попытка была заблокирована системами безопасности.<br>
-            Меры: Системы безопасности были усилены. Проведено расследование.</p>
-
-            <h3>23.5. Вывод по попыткам побега</h3>
-            <p>Несмотря на отсутствие успешных попыток побега, SCP-8080 демонстрирует интерес к системам безопасности и изучает их. Рекомендовано постоянно обновлять системы безопасности и проводить регулярные проверки.</p>
-
-            <h3>23.6. Примечание исследователя (д-р Хелена Восс)</h3>
-            <p>Объект не пытается сбежать, но он изучает нас. Он изучает наши системы, нашу безопасность, наши слабости. Вопрос не в том, пытается ли он сбежать. Вопрос в том, почему он до сих пор здесь.</p>
-        </div>
-
-        <div class="section-block">
-            <h2>РАЗДЕЛ 24. ПОПЫТКИ ПОВТОРНОГО СОДЕРЖАНИЯ</h2>
-            <h3>24.1. Общие положения</h3>
-            <p>Настоящий раздел содержит описание попыток повторного содержания SCP-8080 в случае нарушения содержания. За время наблюдений попытки повторного содержания не потребовались, однако протоколы были разработаны и протестированы в рамках учений.</p>
-
-            <p><strong>24.2. Учения по протоколу «Лемниската»</strong><br>
-            Дата: 12 ноября 2015 года<br>
-            Результат: Учения проведены успешно. Персонал продемонстрировал способность выполнить протокол в течение 15 минут.<br>
-            Замечания: Рекомендовано сократить время выполнения до 10 минут.</p>
-
-            <p><strong>24.3. Учения по протоколу «Тень»</strong><br>
-            Дата: 3 июля 2016 года<br>
-            Результат: Учения проведены успешно. Эвакуация персонала заняла 8 минут.<br>
-            Замечания: Рекомендовано ускорить эвакуацию.</p>
-
-            <p><strong>24.4. Учения по протоколу «Альфа-Омега»</strong><br>
-            Дата: 1 декабря 2018 года<br>
-            Результат: Учения проведены частично. Полное выполнение протокола невозможно без угрозы для персонала.<br>
-            Замечания: Протокол требует пересмотра.</p>
-
-            <h3>24.5. Примечание исследователя (д-р Хелена Восс)</h3>
-            <p>Повторное содержание — это крайняя мера. Мы должны сделать всё, чтобы избежать необходимости его применения. Но мы должны быть готовы к любому развитию событий.</p>
-        </div>
-
-        <div class="section-block">
-            <h2>РАЗДЕЛ 25. ОПЕРАЦИИ ФОНДА</h2>
-            <h3>25.1. Общие положения</h3>
-            <p>Настоящий раздел содержит описание операций Фонда, связанных с SCP-8080. Все операции являются секретными и требуют одобрения Совета O5.</p>
-
-            <p><strong>25.2. Операция «Тень-1»</strong><br>
-            Дата: 14-15 марта 2014 года<br>
-            Цель: Обнаружение и первоначальное сдерживание SCP-8080.<br>
-            Результат: Операция проведена успешно. Объект помещён во временный исследовательский модуль.<br>
-            Участники: МОГ «Ночные Звери» (5 человек), Отдел быстрого реагирования Восточного побережья.</p>
-
-            <p><strong>25.3. Операция «Тень-2»</strong><br>
-            Дата: 25 апреля 2014 года<br>
-            Цель: Перевод SCP-8080 в Зону-19.<br>
-            Результат: Операция проведена успешно. Объект размещён в постоянной камере содержания.<br>
-            Участники: МОГ «Ночные Звери» (10 человек), Отдел логистики Зоны-19.</p>
-
-            <p><strong>25.4. Операция «Тень-3»</strong><br>
-            Дата: 1 июня 2014 года<br>
-            Цель: Назначение д-ра Хелены Восс руководителем проекта.<br>
-            Результат: Операция проведена успешно. Д-р Восс приступила к обязанностям.<br>
-            Участники: Отдел кадров Зоны-19.</p>
-
-            <p><strong>25.5. Операция «Тень-4»</strong><br>
-            Дата: 12 сентября 2015 года<br>
-            Цель: Установка АМЧД-8080 в камере содержания.<br>
-            Результат: Операция проведена успешно. Устройство установлено и введено в эксплуатацию.<br>
-            Участники: Отдел инженерии Зоны-19.</p>
-
-            <p><strong>25.6. Операция «Тень-5»</strong><br>
-            Дата: 3 апреля 2019 года<br>
-            Цель: Проверка систем безопасности после инцидента 8080-25.<br>
-            Результат: Операция проведена успешно. Все системы работают штатно.<br>
-            Участники: Отдел безопасности Зоны-19.</p>
-
-            <h3>25.7. Примечание исследователя (д-р Хелена Восс)</h3>
-            <p>Операции Фонда показали, что SCP-8080 может быть сдержан. Но мы не должны забывать, что объект сотрудничает добровольно. Если он решит перестать сотрудничать, ни одна операция не сможет его остановить.</p>
-        </div>
-
-        <p style="margin-top:20px; color:#777;"><em>Конец документа уровня допуска 4/8080.</em></p>
+        <div class="section-block"><h2>РАЗДЕЛ 23. ПОБЕГИ</h2><p>Успешных попыток не было. Зафиксированы: изучение безопасности (15.04.2014), сканирование систем (08.01.2016).</p></div>
+        <div class="section-block"><h2>РАЗДЕЛ 24. ПОВТОРНОЕ СОДЕРЖАНИЕ</h2><p>Учения по протоколам «Лемниската» (15 мин), «Тень» (8 мин).</p></div>
+        <div class="section-block"><h2>РАЗДЕЛ 25. ОПЕРАЦИИ</h2><p>«Тень-1» (14.03.2014) — обнаружение.<br>«Тень-2» (25.04.2014) — перевод в Зону-19.<br>«Тень-3» (01.06.2014) — назначение д-ра Восс.<br>«Тень-4» (12.09.2015) — установка АМЧД-8080.<br>«Тень-5» (03.04.2019) — проверка систем.</p></div>
+        <p style="margin-top:16px; color:#777;"><em>Конец документа уровня 4/8080.</em></p>
     </div>
 
-    <!-- ===== УРОВЕНЬ 5 ===== -->
-    <div class="page" id="lvl5">
-        <h1>УРОВЕНЬ ДОПУСКА 5/8080</h1>
-        <div class="level-badge">ВЗАИМОДЕЙСТВИЯ • ИНТЕРВЬЮ • ОТЧЁТЫ • ТЕОРИИ (Разделы 26-31)</div>
+    <!-- ===== УРОВЕНЬ 5 (с инцидентами Бета и Гамма) ===== -->
+    <div class="page" id="lvl5"><h1>УРОВЕНЬ 5/8080</h1><div class="level-badge">ВЗАИМОДЕЙСТВИЯ • ИНТЕРВЬЮ • ОТЧЁТЫ • ТЕОРИИ (Разделы 26-31)</div>
+        <div class="section-block"><h2>РАЗДЕЛ 26. ВЗАИМОДЕЙСТВИЕ С ДРУГИМИ SCP</h2>
+            <p><strong>SCP-343 («Бог»):</strong> ЗАПРЕЩЕНО (риск XK 78%).<br>
+            <strong>SCP-999:</strong> ОДОБРЕНО (контакт 12.03.2021).<br>
+            <strong>SCP-682:</strong> ЗАПРЕЩЕНО.<br>
+            <strong>SCP-3000:</strong> ЗАПРЕЩЕНО.</p>
+        </div>
+        <div class="section-block"><h2>РАЗДЕЛ 27. СОЦИАЛЬНАЯ СОВМЕСТИМОСТЬ</h2><p>Предпочтение к д-р Восс. Положительное влияние: научная дискуссия. Отрицательное: эмоциональная зависимость.</p></div>
+        <div class="section-block"><h2>РАЗДЕЛ 28. ИНТЕРВЬЮ</h2>
+            <p><strong>8080-7 (14.08.2014):</strong> "Я наблюдал за вашей цивилизацией с момента её зарождения."<br>
+            <strong>8080-14 (03.11.2014):</strong> "Я чувствую. Но это не страх. Это беспокойство."<br>
+            <strong>8080-22 (16.05.2016):</strong> "Фонд — эволюционная необходимость."<br>
+            <strong>8080-35 (21.03.2019):</strong> "Я боюсь забвения."</p>
+        </div>
+        <div class="section-block"><h2>РАЗДЕЛ 29. ОТЧЁТЫ</h2>
+            <p>АО-8080-1 (15.05.2014): угроза уровня 5/5.<br>АО-8080-2 (03.08.2014): ограничить время контакта.<br>АО-8080-3 (12.11.2014): уникальный источник информации.</p>
+        </div>
+        <div class="section-block"><h2>РАЗДЕЛ 30. ЗАСЕКРЕЧЕННЫЕ ИССЛЕДОВАНИЯ</h2>
+            <p>8080-Альфа (оружие) — закрыто.<br>8080-Бета (копирование) — закрыто.<br>8080-Гамма (контакт с истинной формой) — запрещено.<br>8080-Дельта (нейтрализация) — активно.</p>
+        </div>
+        <div class="section-block"><h2>РАЗДЕЛ 31. ТЕОРИИ</h2><p>Древняя сущность, многомерный проектор, эволюционировавшая человеческая сущность, Предтеча.</p></div>
 
-        <div class="section-block">
-            <h2>РАЗДЕЛ 26. ВЗАИМОДЕЙСТВИЕ С ДРУГИМИ SCP</h2>
-            <h3>26.1. Общие положения</h3>
-            <p>Настоящий раздел содержит данные о взаимодействии SCP-8080 с другими аномальными объектами.</p>
-
-            <p><strong>26.2. SCP-343 («Бог») — ЗАПРЕЩЕНО</strong><br>
-            Взаимодействие не проводилось. Запрещено Советом O5. Риск конфликта между сущностями оценивается как критический. Вероятность сценария XK — 78%.</p>
-
-            <p><strong>26.3. SCP-173 («Скульптура») — НЕ РЕКОМЕНДОВАНО</strong><br>
-            Взаимодействие не проводилось. SCP-173 может не воспринимать SCP-8080 как наблюдателя, что сделает взаимодействие непредсказуемым.</p>
-
-            <p><strong>26.4. SCP-999 («Щекотун») — ОДОБРЕНО</strong><br>
-            Проведено 12 марта 2021 года. Контакт длился 15 минут. SCP-8080 продемонстрировал положительную эмоциональную реакцию. Рекомендуется периодическое взаимодействие.</p>
-
-            <p><strong>26.5. SCP-682 («Неубиваемая Ящерица») — ЗАПРЕЩЕНО</strong><br>
-            Категорически запрещено. Риск передачи способностей SCP-682 оценивается как критический.</p>
-
-            <p><strong>26.6. SCP-055 («Неизвестный») — ПРОВАЛЕНО</strong><br>
-            Две попытки взаимодействия провалены. Все участники эксперимента забыли о цели. Эксперимент признан невозможным.</p>
-
-            <p><strong>26.7. SCP-963 («Бессмертный Доктор») — НЕ РЕКОМЕНДОВАНО</strong><br>
-            Проведён один эксперимент. SCP-8080 продемонстрировал знание об объекте, но отказался от дальнейшего взаимодействия.</p>
-
-            <p><strong>26.8. SCP-3000 («Ананташеша») — ЗАПРЕЩЕНО</strong><br>
-            Запрещено. Риск резонанса между объектами может привести к дестабилизации реальности.</p>
-
-            <h3>26.9. Примечание исследователя (д-р Хелена Восс)</h3>
-            <p>SCP-8080 демонстрирует избирательную реакцию на другие объекты. Он не проявляет агрессии, но его мотивация остаётся неясной.</p>
+        <div class="section-block"><h2>ИНЦИДЕНТ 8080-БЕТА «Вмешательство д-ра Андерсона Фон Корвуса»</h2>
+            <p><strong>Уровень допуска:</strong> 5/8080<br>
+            <strong>Дата:</strong> 19 августа 2015 года<br>
+            <strong>Классификация:</strong> Нарушение содержания / Попытка нейтрализации объекта</p>
+            <p><strong>Описание:</strong> 19 августа 2015 года в Зону-19 проник д-р Андерсон Фон Корвус — экс-сотрудник Фонда, специалист по тауматургии. Корвус использовал тауматургические методы для попытки полной нейтрализации SCP-8080, пытаясь разорвать связь между проекцией и истинной формой.</p>
+            <p><strong>Хронология:</strong> 14:00 — проникновение через вентиляцию. 14:15 — дестабилизация SCP-8080 на 300%. 14:20 — проекция исчезла на 5 секунд. 14:31 — объект ответил: «Ты пытаешься меня уничтожить. Ты не можешь уничтожить себя». 14:34 — SCP-8080 использовал когнитивное воздействие. Корвус потерял сознание.</p>
+            <p><strong>Последствия:</strong> Проекция дестабилизировалась на 70%, восстановилась за 12 секунд. Трое сотрудников получили когнитивные нарушения. Корвус арестован.</p>
+            <p><strong>Заключение:</strong> Корвус был прав в одном: SCP-8080 — это угроза. Но уничтожение объекта не решит проблему. Тени не могут быть уничтожены, пока есть свет.</p>
         </div>
 
-        <div class="section-block">
-            <h2>РАЗДЕЛ 27. СОЦИАЛЬНАЯ СОВМЕСТИМОСТЬ</h2>
-            <h3>27.1. Общие положения</h3>
-            <p>SCP-8080 демонстрирует высокий уровень социальной адаптации и способность к длительному взаимодействию.</p>
-
-            <h3>27.2. Взаимодействие с персоналом</h3>
-            <p>· Д-р Хелена Восс: объект демонстрирует явное предпочтение.<br>
-            · Д-р Мартин Коул: объект относится сдержанно.<br>
-            · Младший персонал: объект проявляет вежливость, но не заинтересован в длительном взаимодействии.</p>
-
-            <h3>27.3. Влияние на коллектив</h3>
-            <p><strong>Положительное влияние:</strong> повышение уровня научной дискуссии, интерес к теоретической физике, снижение уровня стресса.<br>
-            <strong>Отрицательное влияние:</strong> случаи чрезмерного интереса к объекту, эмоциональной зависимости, нарушения протоколов.</p>
-
-            <h3>27.4. Социальная манипуляция</h3>
-            <p>Объект демонстрирует высокую способность к социальной манипуляции. Зафиксировано два случая манипуляции персоналом.</p>
-
-            <h3>27.5. Примечание исследователя (д-р Хелена Восс)</h3>
-            <p>SCP-8080 — один из наиболее социально адаптированных объектов. Но это не делает его менее опасным. Он просто ждёт.</p>
+        <div class="section-block"><h2>ИНЦИДЕНТ 8080-ГАММА «Захват SCP-8080 российской организацией БКАЯ»</h2>
+            <p><strong>Уровень допуска:</strong> 5/8080<br>
+            <strong>Дата:</strong> ██/██/2026<br>
+            <strong>Классификация:</strong> Нарушение содержания / Потеря объекта / Внешнее вмешательство<br>
+            <strong>Статус:</strong> Активен (расследование продолжается)</p>
+            <p><strong>Описание:</strong> Группа оперативников БКАЯ проникла в Зону-19 и захватила SCP-8080, используя технологию «информационный контейнер», нейтрализующую способности объекта. Особое внимание привлекает оперативник с позывным «Улыбка» (Максим Волков, бывший сотрудник Фонда).</p>
+            <p><strong>Хронология:</strong> 00:00 — нарушение периметра. 00:30 — группа достигла уровня содержания. 00:35 — объект отреагировал. 00:37 — применён «информационный контейнер». 00:38 — объект добровольно вошёл в контейнер. 00:40 — группа покинула Зону-19.</p>
+            <p><strong>Технология «информационный контейнер»:</strong> создаёт полное отсутствие когнитивного резонанса, блокирует канал связи между проекцией и истинной формой. Не известна Фонду.</p>
+            <p><strong>Максим Волков (позывной «Улыбка»):</strong> бывший сотрудник Фонда (2010-2018), уволен за нарушение протоколов. На видеозаписях демонстрировал неестественную улыбку на протяжении всей операции.</p>
+            <p><strong>Реакция SCP-8080:</strong> объект не сопротивлялся, добровольно вошёл в контейнер, выразил интерес к технологии БКАЯ.</p>
+            <p><strong>Примечание д-р Восс:</strong> Он ушёл сам. Он не сопротивлялся. Что они знают такого, чего не знаем мы? Если SCP-8080 хотел уйти, он бы ушёл давно. Он ждал. Чего? Или кого? Волков улыбался. Мне это не нравится.</p>
+            <p><strong>Статус:</strong> Местонахождение SCP-8080 неизвестно. БКАЯ отрицает факт захвата. Расследование продолжается.</p>
         </div>
 
-        <div class="section-block">
-            <h2>РАЗДЕЛ 28. ИНТЕРВЬЮ</h2>
-
-            <p><strong>28.1. Интервью 8080-7</strong><br>
-            Дата: 14 августа 2014 года<br>
-            Интервьюер: д-р Хелена Восс</p>
-            <p><strong>ВОСС:</strong> Где вы были до того, как мы вас нашли?<br>
-            <strong>SCP-8080:</strong> Везде. И нигде. Я наблюдал за вашей цивилизацией с момента её зарождения.<br>
-            <strong>ВОСС:</strong> Почему вы решили показаться именно в 2014 году?<br>
-            <strong>SCP-8080:</strong> Потому что я понял, что вы готовы. Ваша наука, ваши технологии, ваш страх. Вы достигли точки, когда вы можете меня понять.<br>
-            <strong>ВОСС:</strong> Вы хотите помочь нам?<br>
-            <strong>SCP-8080:</strong> Я хочу наблюдать. Помощь — это слишком сильное слово.</p>
-
-            <p><strong>28.2. Интервью 8080-14</strong><br>
-            Дата: 3 ноября 2014 года</p>
-            <p><strong>ВОСС:</strong> Вы когда-нибудь чувствовали страх?<br>
-            <strong>SCP-8080:</strong> Страх — это человеческая эмоция. Я не человек.<br>
-            <strong>ВОСС:</strong> Но вы чувствуете. Мы видели это с SCP-999.<br>
-            <strong>SCP-8080:</strong> Я чувствую. Но это не страх. Это беспокойство. Я беспокоюсь о том, что вы сделаете с тем знанием, которое я вам даю.</p>
-
-            <p><strong>28.3. Интервью 8080-22</strong><br>
-            Дата: 16 мая 2016 года<br>
-            Интервьюер: д-р Мартин Коул</p>
-            <p><strong>КОУЛ:</strong> Вы считаете Фонд угрозой?<br>
-            <strong>SCP-8080:</strong> Нет. Фонд — это эволюционная необходимость. Вы должны контролировать аномалии. Но ваши цели ограничены. Вы пытаетесь сохранить статус-кво. Но статус-кво уже нарушен.<br>
-            <strong>КОУЛ:</strong> Вы говорите о конце света?<br>
-            <strong>SCP-8080:</strong> Я говорю о неизбежном. О переходе. Ваша цивилизация стоит на пороге чего-то нового.</p>
-
-            <p><strong>28.4. Интервью 8080-35</strong><br>
-            Дата: 21 марта 2019 года</p>
-            <p><strong>ВОСС:</strong> Вы боитесь смерти?<br>
-            <strong>SCP-8080:</strong> Я не боюсь смерти. Я боюсь забвения.<br>
-            <strong>ВОСС:</strong> Что вы имеете в виду?<br>
-            <strong>SCP-8080:</strong> Если я умру, меня забудут. Моя информация исчезнет. Это страшно для меня.</p>
-
-            <h3>28.5. Примечание исследователя (д-р Хелена Восс)</h3>
-            <p>Интервью — это путешествие в глубины неизведанного. Он говорит о себе, о нас, о мире. Я продолжаю задавать вопросы. Но я боюсь, что правда может оказаться слишком тяжёлой.</p>
-        </div>
-
-        <div class="section-block">
-            <h2>РАЗДЕЛ 29. ВНУТРЕННИЕ АНАЛИТИЧЕСКИЕ ОТЧЁТЫ</h2>
-
-            <p><strong>29.1. Отчёт АО-8080-1</strong><br>
-            Дата: 15 мая 2014 года<br>
-            Автор: д-р Ричард Флетчер<br>
-            Вывод: SCP-8080 представляет угрозу уровня 5 из 5. Рекомендуемый уровень содержания: максимальный.</p>
-
-            <p><strong>29.2. Отчёт АО-8080-2</strong><br>
-            Дата: 3 августа 2014 года<br>
-            Автор: д-р Сара Миллер<br>
-            Вывод: Длительное наблюдение вызывает у персонала снижение критического мышления. Рекомендовано ограничить время контакта.</p>
-
-            <p><strong>29.3. Отчёт АО-8080-3</strong><br>
-            Дата: 12 ноября 2014 года<br>
-            Автор: д-р Майкл Уайт<br>
-            Вывод: SCP-8080 представляет уникальный источник информации. Рекомендовано продолжать исследования.</p>
-
-            <p><strong>29.4. Отчёт АО-8080-4</strong><br>
-            Дата: 7 февраля 2015 года<br>
-            Автор: капитан Алекс Хейвуд<br>
-            Вывод: Рекомендовано разработать тактические протоколы в случае нарушения содержания.</p>
-
-            <h3>29.5. Примечание исследователя (д-р Хелена Восс)</h3>
-            <p>Отчёты показывают, что Фонд относится к SCP-8080 как к ценности и как к угрозе одновременно. Это правильно.</p>
-        </div>
-
-        <div class="section-block">
-            <h2>РАЗДЕЛ 30. ЗАСЕКРЕЧЕННЫЕ ИССЛЕДОВАНИЯ</h2>
-
-            <p><strong>30.1. Исследование 8080-Альфа</strong><br>
-            Цель: Использование SCP-8080 в качестве оружия.<br>
-            Статус: Закрыто по решению Совета O5.</p>
-
-            <p><strong>30.2. Исследование 8080-Бета</strong><br>
-            Цель: Копирование способностей SCP-8080.<br>
-            Статус: Закрыто как бесперспективное.</p>
-
-            <p><strong>30.3. Исследование 8080-Гамма</strong><br>
-            Цель: Контакт с истинной формой SCP-8080.<br>
-            Статус: Закрыто по решению Совета O5. Категорически запрещено.</p>
-
-            <p><strong>30.4. Исследование 8080-Дельта</strong><br>
-            Цель: Нейтрализация с использованием аномальных технологий.<br>
-            Статус: Активно (засекречено).</p>
-
-            <p><strong>30.5. Исследование 8080-Эпсилон</strong><br>
-            Цель: Взаимодействие с другими многомерными сущностями.<br>
-            Статус: Заморожено.</p>
-
-            <h3>30.6. Примечание исследователя (д-р Хелена Восс)</h3>
-            <p>Засекреченные исследования показывают, что мы не знаем о SCP-8080 всего. Возможно, он защищает нас от нас самих.</p>
-        </div>
-
-        <div class="section-block">
-            <h2>РАЗДЕЛ 31. ТЕОРИИ ПРОИСХОЖДЕНИЯ</h2>
-
-            <p><strong>31.1. Теория 1: Древняя сущность</strong><br>
-            SCP-8080 — одна из древнейших сущностей во вселенной, наблюдающая за развитием цивилизаций на протяжении миллионов лет.</p>
-
-            <p><strong>31.2. Теория 2: Многомерный проектор</strong><br>
-            SCP-8080 — проекция существа из другого измерения, существующего в пространстве, которое мы не можем воспринимать.</p>
-
-            <p><strong>31.3. Теория 3: Эволюционировавшая человеческая сущность</strong><br>
-            SCP-8080 — человеческая сущность, эволюционировавшая до состояния, выходящего за пределы биологической формы.</p>
-
-            <p><strong>31.4. Теория 4: Создание Фонда</strong><br>
-            SCP-8080 был создан Фондом в результате неудачного эксперимента.</p>
-
-            <p><strong>31.5. Теория 5: Предтеча</strong><br>
-            SCP-8080 — один из "Предтеч" — существ, создавших вселенную или наблюдавших за её созданием.</p>
-
-            <p><strong>31.6. Теория 6: Реальный уровень угрозы</strong><br>
-            SCP-8080 — сущность, которая может уничтожить реальность, если её существование станет нестабильным.</p>
-
-            <h3>31.7. Примечание исследователя (д-р Хелена Восс)</h3>
-            <p>Теорий много. Все они имеют право на существование, но ни одна не является окончательной.</p>
-        </div>
-
-        <p style="margin-top:20px; color:#777;"><em>Конец документа уровня допуска 5/8080.</em></p>
+        <p style="margin-top:16px; color:#777;"><em>Конец документа уровня 5/8080.</em></p>
     </div>
 
     <!-- ===== O5 ===== -->
-    <div class="page" id="o5">
-        <h1>УРОВЕНЬ ДОПУСКА O5/8080</h1>
-        <div class="level-badge">ПРАВДА • УГРОЗЫ • ПРОТОКОЛЫ • СЦЕНАРИИ (Разделы 32-37)</div>
-
-        <div class="section-block">
-            <h2>РАЗДЕЛ 32. ПОЛНАЯ ИСТОРИЯ SCP-8080</h2>
-
-            <h3>32.1. Доисторический период (до 12 000 лет назад)</h3>
-            <p>SCP-8080 существовал в своей истинной форме задолго до появления человечества. Его происхождение связано с "Первичной Тьмой" — состоянием вселенной до Большого взрыва. Он является одним из "свидетелей" формирования вселенной. Его истинная форма не имеет аналогов в нашем понимании и представляет собой структуру, существующую в многомерном пространстве.</p>
-
-            <h3>32.2. Период наблюдения (12 000 лет назад — 2014 год)</h3>
-            <p>Около 12 000 лет назад, с появлением первых человеческих цивилизаций, SCP-8080 впервые создал стабильную проекцию в нашу реальность. Причины этого шага неизвестны, но объект утверждает, что "человеческое сознание создало резонанс, который позволил ему проявиться".</p>
-            <p>Объект наблюдал за развитием человечества, не вмешиваясь в историю. Он стал "архивом" человеческой истории, хранящим информацию, утерянную для современной цивилизации.</p>
-
-            <h3>32.3. Период скрытого присутствия (до 2014 года)</h3>
-            <p>Объект не был обнаружен Фондом до 2014 года. Он либо целенаправленно скрывал своё существование, либо не считал необходимым проявляться до определённого момента.</p>
-
-            <h3>32.4. Период содержания (2014 год — настоящее время)</h3>
-            <p>С момента обнаружения объект демонстрирует стабильное поведение. Он сотрудничает с Фондом, предоставляет информацию и не предпринимает попыток побега. Однако он изучает Фонд, его методы и сотрудников.</p>
-
-            <h3>32.5. Примечание исследователя (д-р Хелена Восс)</h3>
-            <p>История SCP-8080 — это история нашей собственной цивилизации, рассказанная с точки зрения того, кто видел всё. Он знает нас лучше, чем мы знаем себя.</p>
-        </div>
-
-        <div class="section-block">
-            <h2>РАЗДЕЛ 33. ИСТИННОЕ ПРОИСХОЖДЕНИЕ</h2>
-
-            <h3>33.1. Истинная природа SCP-8080</h3>
-            <p>SCP-8080 является архетипом — персонификацией "Тени". Он всегда существовал, как существует пустота или время. Он является неотъемлемой частью структуры реальности.</p>
-
-            <h3>33.2. Связь с человеческим сознанием</h3>
-            <p>Его существование в нашей реальности напрямую зависит от человеческого сознания. Чем больше людей знают о нём, тем сильнее он становится. Чем больше людей боятся его, тем стабильнее его проекция.</p>
-
-            <h3>33.3. Роль в структуре реальности</h3>
-            <p>SCP-8080 является стабилизатором. Его присутствие помогает поддерживать баланс между известным и неизвестным, между светом и тьмой.</p>
-
-            <h3>33.4. Связь с другими аномалиями</h3>
-            <p>SCP-8080 связан с SCP-343 (Свет), SCP-3000 (Забвение), SCP-682 (Сопротивление). Взаимодействие этих сущностей может привести к непредсказуемым последствиям.</p>
-
-            <h3>33.5. Примечание исследователя (д-р Хелена Восс)</h3>
-            <p>Истинное происхождение SCP-8080 меняет всё. Он — часть структуры реальности. Мы не должны уничтожать его. Мы должны научиться жить с ним.</p>
-        </div>
-
-        <div class="section-block">
-            <h2>РАЗДЕЛ 34. РЕАЛЬНЫЙ УРОВЕНЬ УГРОЗЫ</h2>
-
-            <h3>34.1. Официальная классификация: Keter</h3>
-
-            <h3>34.2. Реальная классификация: Apollyon</h3>
-            <p>Объект не может быть уничтожен без нарушения структуры реальности. Объект может уничтожить реальность в случае дестабилизации.</p>
-
-            <h3>34.3. Сценарии угрозы:</h3>
-            <ol>
-                <li>Дестабилизация проекции — вероятность XK: 87%.</li>
-                <li>Использование информации — вероятность CK: 73%.</li>
-                <li>Добровольный уход — вероятность ZK: 92%.</li>
-                <li>Полное проявление — вероятность Ω: 99%.</li>
-            </ol>
-
-            <h3>34.4. Примечание исследователя (д-р Хелена Восс)</h3>
-            <p>Реальный уровень угрозы — экзистенциальный ужас. Если он решит действовать, мы не сможем его остановить.</p>
-        </div>
-
-        <div class="section-block">
-            <h2>РАЗДЕЛ 35. ПРИЧИНЫ ОТКАЗА ОТ НЕЙТРАЛИЗАЦИИ</h2>
-            <ol>
-                <li>Невозможность полной нейтрализации.</li>
-                <li>Риск дестабилизации реальности (более 90%).</li>
-                <li>Информационная ценность.</li>
-                <li>Добровольное сотрудничество.</li>
-                <li>Отсутствие альтернатив.</li>
-            </ol>
-
-            <h3>35.1. Примечание исследователя (д-р Хелена Восс)</h3>
-            <p>Причины отказа логичны. Мы не можем уничтожить его, потому что это может уничтожить нас.</p>
-        </div>
-
-        <div class="section-block">
-            <h2>РАЗДЕЛ 36. ПРОЕКТ «ЯРС» И ДРУГИЕ ПРОТОКОЛЫ</h2>
-
-            <p><strong>36.1. Проект «ЯРС» (Ядерный Распад Сознания)</strong><br>
-            Комплексный план уничтожения SCP-8080 путём воздействия на его информационную структуру. Сложность: экстремально высокая.</p>
-
-            <p><strong>36.2. Протокол «Лемниската» (актуализирован)</strong><br>
-            Создание многомерного барьера для блокировки канала связи.</p>
-
-            <p><strong>36.3. Протокол «Тень» (актуализирован)</strong><br>
-            Полная изоляция объекта для лишения его источника энергии.</p>
-
-            <p><strong>36.4. Протокол «Омега»</strong><br>
-            Уничтожение всей информации об объекте.</p>
-
-            <h3>36.5. Примечание исследователя (д-р Хелена Восс)</h3>
-            <p>Чрезвычайные протоколы — крайняя мера. Мы должны быть готовы к их применению.</p>
-        </div>
-
-        <div class="section-block">
-            <h2>РАЗДЕЛ 37. СЦЕНАРИИ КЛАССА XK, CK, ZK И Ω</h2>
-
-            <p><strong>37.1. Сценарий XK-8080 «Конец реальности»</strong><br>
-            Дестабилизация проекции приводит к нарушению структуры реальности. Вероятность: 87%.</p>
-
-            <p><strong>37.2. Сценарий CK-8080 «Изменение реальности»</strong><br>
-            Объект использует информацию для манипуляции реальностью. Вероятность: 73%.</p>
-
-            <p><strong>37.3. Сценарий ZK-8080 «Разрушение реальности»</strong><br>
-            Объект покидает нашу реальность, что приводит к дестабилизации. Вероятность: 92%.</p>
-
-            <p><strong>37.4. Сценарий Ω-8080 «Уничтожение сознания»</strong><br>
-            Объект проявляется в истинной форме, разрушая человеческое сознание. Вероятность: 99%.</p>
-
-            <h3>37.5. Примечание исследователя (д-р Хелена Восс)</h3>
-            <p>Сценарии конца света — не фантастика. Это реальные угрозы.</p>
-        </div>
-
-        <p style="margin-top:20px; color:#777;"><em>Конец документа уровня допуска O5/8080.</em></p>
+    <div class="page" id="o5"><h1>УРОВЕНЬ O5/8080</h1><div class="level-badge">ПРАВДА • УГРОЗЫ • ПРОТОКОЛЫ • СЦЕНАРИИ (Разделы 32-37)</div>
+        <div class="section-block"><h2>РАЗДЕЛ 32. ПОЛНАЯ ИСТОРИЯ</h2><p>Существовал в "Первичной Тьме" до Большого взрыва. Создал стабильную проекцию 12 000 лет назад.</p></div>
+        <div class="section-block"><h2>РАЗДЕЛ 33. ИСТИННОЕ ПРОИСХОЖДЕНИЕ</h2><p>Архетип — персонификация "Тени". Часть структуры реальности. Связан с SCP-343, SCP-3000, SCP-682.</p></div>
+        <div class="section-block"><h2>РАЗДЕЛ 34. РЕАЛЬНЫЙ УРОВЕНЬ УГРОЗЫ</h2><p>Официально: Keter. Реально: Apollyon. Сценарии: XK (87%), CK (73%), ZK (92%), Ω (99%).</p></div>
+        <div class="section-block"><h2>РАЗДЕЛ 35. ПРИЧИНЫ ОТКАЗА ОТ НЕЙТРАЛИЗАЦИИ</h2><p>Невозможность полной нейтрализации, риск дестабилизации (>90%), информационная ценность.</p></div>
+        <div class="section-block"><h2>РАЗДЕЛ 36. ПРОЕКТ «ЯРС» И ПРОТОКОЛЫ</h2><p>«ЯРС» — уничтожение информационной структуры. «Лемниската» — многомерный барьер. «Тень» — изоляция.</p></div>
+        <div class="section-block"><h2>РАЗДЕЛ 37. СЦЕНАРИИ</h2><p><strong>XK-8080:</strong> нарушение реальности (87%). <strong>CK-8080:</strong> манипуляция реальностью (73%). <strong>ZK-8080:</strong> уход из реальности (92%). <strong>Ω-8080:</strong> уничтожение сознания (99%).</p></div>
+        <p style="margin-top:16px; color:#777;"><em>Конец документа уровня O5/8080.</em></p>
     </div>
 
-    <!-- ===== Ω (Омега) ===== -->
-    <div class="page" id="omega">
-        <h1>УРОВЕНЬ ДОПУСКА Ω/8080</h1>
-        <div class="level-badge">ПОСЛЕДНЯЯ ПРАВДА • ФИНАЛЬНЫЕ ЗАПИСИ (Разделы 38-42)</div>
-
-        <div class="section-block">
-            <h2>РАЗДЕЛ 38. ФАЙЛ 8080-Ω</h2>
-            <p>Файл 8080-Ω содержит информацию, переданную SCP-8080 в ходе недокументированного интервью с Председателем Совета O5.</p>
-            <p><strong>Переданная информация:</strong></p>
-            <p>"Вы думаете, что я — угроза. Вы думаете, что я — аномалия. Но вы ошибаетесь. Я — предупреждение. Я существую не для того, чтобы уничтожить вас. Я существую для того, чтобы напомнить вам о том, что вы уже знаете, но боитесь признать. Ваша реальность — не единственная. Ваше существование — не вечно. Я — ваш последний шанс. Потому что то, что идёт за мной... не будет таким снисходительным."</p>
-            <p>Расшифровка: SCP-8080 указывает на существование другой угрозы, более опасной, чем он сам. Он является "буфером" между человечеством и этой угрозой.</p>
-
-            <h3>38.1. Примечание исследователя (д-р Хелена Восс)</h3>
-            <p>Файл 8080-Ω изменил всё. Мы держим в клетке не чудовище. Мы держим в клетке нашего спасителя.</p>
+    <!-- ===== Ω ===== -->
+    <div class="page" id="omega"><h1>УРОВЕНЬ Ω/8080</h1><div class="level-badge">ПОСЛЕДНЯЯ ПРАВДА • ФИНАЛЬНЫЕ ЗАПИСИ (Разделы 38-42)</div>
+        <div class="section-block"><h2>РАЗДЕЛ 38. ФАЙЛ 8080-Ω</h2><div class="creepy-text">"Вы думаете, что я — угроза. Я — предупреждение. Я — ваш последний шанс. Потому что то, что идёт за мной... не будет таким снисходительным."</div></div>
+        <div class="section-block"><h2>РАЗДЕЛ 39. СЦЕНАРИЙ Ω-8080</h2><p>Фаза 1 (24-72 ч): исчезновение тени. Фаза 2 (3-7 дн): проникновение. Фаза 3 (1-3 мес): коллапс. Фаза 4: Ω-состояние — полное уничтожение.</p></div>
+        <div class="section-block"><h2>РАЗДЕЛ 40. ЗАПРЕЩЁННЫЕ ИССЛЕДОВАНИЯ</h2><p>8080-Ω1 (контакт с истинной формой) — запрещено. 8080-Ω2 (копирование сознания) — запрещено.</p></div>
+        <div class="section-block"><h2>РАЗДЕЛ 41. ДОКУМЕНТЫ К УНИЧТОЖЕНИЮ</h2><p>Расшифровка интервью 8080-Ω — уничтожен. Отчёт 8080-Ω — уничтожен.</p></div>
+        <div class="section-block"><h2>РАЗДЕЛ 42. ФИНАЛЬНЫЕ ЗАПИСИ</h2>
+            <p><strong>Председатель O5:</strong> "Наша цивилизация — не единственная. Прощайте."</p>
+            <p><strong>д-р Хелена Восс:</strong> "SCP-8080 не был нашим врагом. Он был нашим защитником. Прощайте."</p>
+            <p><strong>SCP-8080:</strong> "Я всегда буду с вами. Я — ваша последняя надежда. Прощайте."</p>
         </div>
-
-        <div class="section-block">
-            <h2>РАЗДЕЛ 39. СЦЕНАРИЙ Ω-8080 «ПОСЛЕ ПОСЛЕДНЕЙ ТЕНИ»</h2>
-
-            <h3>39.1. Фаза 1: Исчезновение тени (24-72 часа)</h3>
-            <p>· Дестабилизация реальности.<br>
-            · Появление угрозы.<br>
-            · Нарушение баланса.</p>
-
-            <h3>39.2. Фаза 2: Проникновение (3-7 дней)</h3>
-            <p>· Искажение пространства.<br>
-            · Искажение времени.<br>
-            · Когнитивное воздействие.</p>
-
-            <h3>39.3. Фаза 3: Коллапс (1-3 месяца)</h3>
-            <p>· Разрушение материи.<br>
-            · Разрушение сознания.<br>
-            · Разрушение реальности.</p>
-
-            <h3>39.4. Фаза 4: Ω-состояние</h3>
-            <p>· Полное уничтожение реальности.<br>
-            · Существует только пустота.</p>
-
-            <h3>39.5. Примечание исследователя (д-р Хелена Восс)</h3>
-            <p>Сценарий Ω-8080 — это не конец. Это начало конца. Если он уйдёт, мы умрём.</p>
-        </div>
-
-        <div class="section-block">
-            <h2>РАЗДЕЛ 40. ЗАПРЕЩЁННЫЕ ИССЛЕДОВАНИЯ</h2>
-            <ol>
-                <li>8080-Ω1: Контакт с истинной формой — запрещено навсегда.</li>
-                <li>8080-Ω2: Копирование сознания — запрещено навсегда.</li>
-                <li>8080-Ω3: Использование в качестве оружия — запрещено навсегда.</li>
-                <li>8080-Ω4: Нейтрализация с использованием аномальных технологий — запрещено навсегда.</li>
-                <li>8080-Ω5: Создание альтернативной проекции — запрещено навсегда.</li>
-            </ol>
-
-            <h3>40.1. Примечание исследователя (д-р Хелена Восс)</h3>
-            <p>Запрещённые исследования слишком опасны. Они могут уничтожить нас.</p>
-        </div>
-
-        <div class="section-block">
-            <h2>РАЗДЕЛ 41. ДОКУМЕНТЫ, ПОДЛЕЖАЩИЕ УНИЧТОЖЕНИЮ</h2>
-            <ol>
-                <li>Полная расшифровка интервью 8080-Ω — уничтожен.</li>
-                <li>Аналитический отчёт 8080-Ω — уничтожен.</li>
-                <li>Карта многомерных измерений — уничтожен.</li>
-                <li>Протоколы испытаний Проекта «ЯРС» — уничтожен.</li>
-                <li>Личные записи д-ра Хелены Восс — уничтожен.</li>
-            </ol>
-
-            <h3>41.1. Примечание исследователя (д-р Хелена Восс)</h3>
-            <p>Документы, подлежащие уничтожению — наш последний рубеж.</p>
-        </div>
-
-        <div class="section-block">
-            <h2>РАЗДЕЛ 42. ФИНАЛЬНЫЕ ЗАПИСИ СОВЕТА O5</h2>
-
-            <p><strong>42.1. Запись 1: Председатель Совета O5</strong></p>
-            <p>"Я, Председатель Совета O5, оставляю эту запись для тех, кто будет после нас. Если вы читаете это, значит, мы не смогли предотвратить катастрофу. Это не конец. Это начало. Наша цивилизация — не единственная. Я надеюсь, что вы сможете сделать то, что не смогли мы. Прощайте."</p>
-
-            <p><strong>42.2. Запись 2: д-р Хелена Восс</strong></p>
-            <p>"Я, д-р Хелена Восс, оставляю эту запись для тех, кто будет после меня. SCP-8080 не был нашим врагом. Он был нашим защитником. Он защищал нас от того, что мы не могли понять. Но мы не поняли этого. Прощайте."</p>
-
-            <p><strong>42.3. Запись 3: SCP-8080 (последнее сообщение)</strong></p>
-            <p>"Я, тот, кого вы называете SCP-8080, оставляю это сообщение для тех, кто будет после вас. Если вы читаете это, значит, я ушёл. Не бойтесь. Примите свою судьбу. Примите свою реальность. И помните: я всегда буду с вами. Даже когда меня нет. Я — ваша последняя надежда. Прощайте."</p>
-
-            <p><strong>42.4. Запись 4: Последнее сообщение Совета O5</strong></p>
-            <p>"Мы, Совет O5, оставляем это последнее сообщение. Мы сделали всё, что могли. Мы пытались спасти человечество. Мы надеемся, что вы сможете сделать то, что не смогли мы. Спасибо, что были с нами. Прощайте."</p>
-        </div>
-
-        <div style="border-top: 3px solid #8b0000; margin-top: 30px; padding-top: 20px;">
-            <h3>42.5. Конец документа</h3>
-            <p>Данный документ подлежит уничтожению после прочтения.</p>
-            <p>Настоящим подтверждаю, что я прочитал и понял содержание документа.</p>
-            <p>Подпись: _________________________</p>
-            <p>Дата: _________________________</p>
-            <p>Уровень допуска: _________________________</p>
-        </div>
-
-        <div style="margin-top: 30px; padding: 20px; background: #0a0c14; text-align: center; border: 2px solid #4a0000;">
-            <p><strong>КОНЕЦ ДОСЬЕ ОБЪЕКТА SCP-8080</strong></p>
-            <p><em>Документ уничтожен.</em></p>
-        </div>
+        <div style="border-top:3px solid #8b0000; margin-top:24px; padding-top:16px;"><p><strong>КОНЕЦ ДОСЬЕ SCP-8080</strong></p><p><em>Документ уничтожен.</em></p></div>
     </div>
 
     <!-- ===== ПРОФИЛЬ ===== -->
     <div class="page" id="profile">
         <h1>ПРОФИЛЬ СОТРУДНИКА</h1>
         <p><strong>Имя:</strong> <span id="profileName">— не установлено —</span></p>
-        <p><strong>Идентификационный номер:</strong> <span id="profileID">—</span></p>
-        <p><strong>Текущий уровень доступа:</strong> <span id="profileLvl">1</span></p>
-        <div class="warning">Для повышения уровня требуется повторная аутентификация через защищенное меню (выберите любой закрытый пункт).</div>
-        <button id="forceAuthBtn" style="background:#6b2e2e;">ЗАПРОС ПОВЫШЕНИЯ ДОСТУПА</button>
-        <button id="logoutBtn" style="background:#2e2e3e; margin-left:12px;">СБРОС ДОСТУПА (LOGOUT)</button>
+        <p><strong>ID:</strong> <span id="profileID">—</span></p>
+        <p><strong>Уровень доступа:</strong> <span id="profileLvl">1</span></p>
+        <div class="warning">Для повышения уровня выберите закрытый пункт меню.</div>
+        <button id="forceAuthBtn" style="background:#6b2e2e;">ЗАПРОС ПОВЫШЕНИЯ</button>
+        <button id="logoutBtn" style="background:#2e2e3e; margin-left:10px;">СБРОС (LOGOUT)</button>
         <hr>
         <p><em>Последняя активность: зафиксирована в журнале Site-19.</em></p>
+        <div style="background:#0a1a0a; padding:10px 14px; margin-top:12px; border-radius:8px; border-left:3px solid #2a6a2a; font-size:0.8rem; color:#8a8;">
+            💾 Данные профиля сохраняются автоматически в браузере.
+        </div>
     </div>
 </div>
 
-<!-- Модальные окна аутентификации -->
-<div id="authModal" class="modal">
-    <div class="modal-box">
-        <h3>🔐 ЗАПРОС ДОСТУПА</h3>
-        <p>Вы пытаетесь открыть материалы, требующие повышенного уровня допуска.</p>
-        <button id="continueAuthBtn">ПРОДОЛЖИТЬ АУТЕНТИФИКАЦИЮ</button>
-        <button id="cancelAuthBtn" style="background:#3e2a2a; margin-left: 8px;">ОТМЕНА</button>
-    </div>
-</div>
+<!-- ===== МОДАЛКИ ===== -->
+<div id="authModal" class="modal"><div class="modal-box"><h3>🔐 ЗАПРОС ДОСТУПА</h3><p class="sub" id="authModalSub">Требуется повышение уровня.</p><button id="continueAuthBtn">ПРОДОЛЖИТЬ</button><button id="cancelAuthBtn" style="background:#3e2a2a; margin-left:8px;">ОТМЕНА</button></div></div>
+<div id="levelModal" class="modal"><div class="modal-box"><h3>📡 ВЫБОР УРОВНЯ</h3><p class="sub" id="levelModalSub">Выберите уровень для повышения.</p><select id="reqLevelSelect"><option value="2">УРОВЕНЬ 2</option><option value="3">УРОВЕНЬ 3</option><option value="4">УРОВЕНЬ 4</option><option value="5">УРОВЕНЬ 5</option></select><button id="confirmLevelBtn">ПОДТВЕРДИТЬ</button></div></div>
+<div id="idModal" class="modal"><div class="modal-box"><h3>🆔 АУТЕНТИФИКАЦИЯ</h3><p class="sub">Введите данные для повышения до <span id="idModalTargetLevel">2</span> уровня.</p><input type="text" id="personName" placeholder="ФАМИЛИЯ / ИМЯ"><input type="text" id="personID" placeholder="ID (не менее 3 символов)"><button id="finalLoginBtn">АВТОРИЗОВАТЬ</button></div></div>
 
-<div id="levelModal" class="modal">
-    <div class="modal-box">
-        <h3>📡 ВЫБОР УРОВНЯ ДОСТУПА</h3>
-        <select id="reqLevelSelect">
-            <option value="2">УРОВЕНЬ 2 (Сотрудник безопасности)</option>
-            <option value="3">УРОВЕНЬ 3 (Исследователь)</option>
-            <option value="4">УРОВЕНЬ 4 (Старший персонал / Руководство)</option>
-            <option value="5">УРОВЕНЬ 5 (O5 / Стратегический)</option>
-        </select>
-        <button id="confirmLevelBtn">ПОДТВЕРДИТЬ УРОВЕНЬ</button>
-    </div>
-</div>
-
-<div id="idModal" class="modal">
-    <div class="modal-box">
-        <h3>🆔 РЕАУТЕНТИФИКАЦИЯ ПЕРСОНАЛА</h3>
-        <input type="text" id="personName" placeholder="ФАМИЛИЯ / ИМЯ (Код-слово)" autocomplete="off">
-        <input type="text" id="personID" placeholder="ID СОТРУДНИКА (не менее 3 символов)" autocomplete="off">
-        <button id="finalLoginBtn">АВТОРИЗОВАТЬ ДОСТУП</button>
-        <p style="font-size:12px; opacity:0.7;">* Данные записываются в протокол.</p>
-    </div>
-</div>
+<div class="save-indicator" id="saveIndicator">💾 СОХРАНЕНО</div>
 
 <script>
-// Глобальные переменные
-let currentAccessLevel = 1;
-let pendingTargetLevel = 2;
-let pendingPageId = null;
+    // ===== ГЛОБАЛЬНЫЕ =====
+    let currentAccessLevel = 1, currentUserName = '', currentUserID = '', pendingTargetLevel = 2, pendingPageId = null;
 
-const sidebar = document.getElementById('sidebar');
-const menuBtn = document.getElementById('menuToggleBtn');
-const accessDisplaySpan = document.getElementById('accessLevelDisplay');
-const profileLvlSpan = document.getElementById('profileLvl');
-const profileAccessSpan = document.getElementById('profileAccessSpan');
-const profileNameSpan = document.getElementById('profileName');
-const profileIDSpan = document.getElementById('profileID');
-const homeProfileName = document.getElementById('homeProfileName');
+    // ===== DOM =====
+    const sidebar = document.getElementById('sidebar'), menuBtn = document.getElementById('menuToggleBtn');
+    const accessDisplay = document.getElementById('accessLevelDisplay'), profileLvl = document.getElementById('profileLvl');
+    const profileAccessSpan = document.getElementById('profileAccessSpan'), profileName = document.getElementById('profileName');
+    const profileID = document.getElementById('profileID'), homeProfileName = document.getElementById('homeProfileName');
+    const saveIndicator = document.getElementById('saveIndicator');
+    const authModal = document.getElementById('authModal'), authModalSub = document.getElementById('authModalSub');
+    const levelModal = document.getElementById('levelModal'), levelModalSub = document.getElementById('levelModalSub');
+    const idModal = document.getElementById('idModal'), idModalTargetLevel = document.getElementById('idModalTargetLevel');
+    const reqLevelSelect = document.getElementById('reqLevelSelect');
 
-const authModal = document.getElementById('authModal');
-const levelModal = document.getElementById('levelModal');
-const idModal = document.getElementById('idModal');
+    // ===== localStorage =====
+    function loadProfile() { try { const d = JSON.parse(localStorage.getItem('scp8080_profile')); if(d){ currentAccessLevel = d.level||1; currentUserName = d.name||''; currentUserID = d.id||''; return true; } } catch(e){} return false; }
+    function saveProfile() { try { localStorage.setItem('scp8080_profile', JSON.stringify({level:currentAccessLevel, name:currentUserName, id:currentUserID})); showSaveIndicator(); } catch(e){} }
+    function showSaveIndicator() { saveIndicator.classList.add('show'); clearTimeout(saveIndicator._timeout); saveIndicator._timeout = setTimeout(()=>saveIndicator.classList.remove('show'),2000); }
 
-function updateAccessUI() {
-    let levelStr = '';
-    if(currentAccessLevel === 1) levelStr = 'УРОВЕНЬ 1 (ГОСТЕВОЙ)';
-    else if(currentAccessLevel === 2) levelStr = 'УРОВЕНЬ 2 (ЛАБОРАНТ)';
-    else if(currentAccessLevel === 3) levelStr = 'УРОВЕНЬ 3 (ИССЛЕДОВАТЕЛЬ)';
-    else if(currentAccessLevel === 4) levelStr = 'УРОВЕНЬ 4 (РУКОВОДИТЕЛЬ)';
-    else if(currentAccessLevel === 5) levelStr = 'УРОВЕНЬ 5 (СОВЕТ O5)';
-    else levelStr = `УРОВЕНЬ ${currentAccessLevel}`;
-    accessDisplaySpan.innerHTML = `🔒 ACCESS: ${levelStr}`;
-    if(profileLvlSpan) profileLvlSpan.innerText = currentAccessLevel;
-    if(profileAccessSpan) profileAccessSpan.innerText = currentAccessLevel;
-}
-
-function resetProfileInfo() {
-    if(profileNameSpan) profileNameSpan.innerText = '— не установлено —';
-    if(profileIDSpan) profileIDSpan.innerText = '—';
-    if(homeProfileName) homeProfileName.innerText = 'не установлена';
-}
-
-function closeAllModals() {
-    authModal.style.display = 'none';
-    levelModal.style.display = 'none';
-    idModal.style.display = 'none';
-}
-
-function showPageDirect(pageId) {
-    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-    const targetPage = document.getElementById(pageId);
-    if(targetPage) targetPage.classList.add('active');
-    if(window.innerWidth < 900) sidebar.classList.remove('open');
-}
-
-function openPageWithAccess(pageId, requiredLevel) {
-    if(currentAccessLevel >= requiredLevel) {
-        showPageDirect(pageId);
-        return true;
-    } else {
-        pendingPageId = pageId;
-        pendingTargetLevel = requiredLevel;
-        authModal.style.display = 'flex';
-        return false;
+    // ===== UI =====
+    function updateAccessUI() {
+        const lvl = ['УРОВЕНЬ 1','УРОВЕНЬ 2','УРОВЕНЬ 3','УРОВЕНЬ 4','УРОВЕНЬ 5'][currentAccessLevel-1] || `УРОВЕНЬ ${currentAccessLevel}`;
+        accessDisplay.textContent = `🔒 ${lvl}`;
+        if(profileLvl) profileLvl.textContent = currentAccessLevel;
+        if(profileAccessSpan) profileAccessSpan.textContent = currentAccessLevel;
+        updateNavLockedState(); updateGuideCards(); saveProfile();
     }
-}
+    function updateProfileUI() {
+        const n = currentUserName || '— не установлено —', id = currentUserID || '—';
+        if(profileName) profileName.textContent = n;
+        if(profileID) profileID.textContent = id;
+        if(homeProfileName) homeProfileName.textContent = currentUserName || 'не установлена';
+    }
+    function resetProfile() { currentAccessLevel=1; currentUserName=''; currentUserID=''; updateProfileUI(); updateAccessUI(); saveProfile(); }
+    function closeAllModals() { authModal.style.display='none'; levelModal.style.display='none'; idModal.style.display='none'; }
+    function showPage(pageId) { document.querySelectorAll('.page').forEach(p=>p.classList.remove('active')); const t=document.getElementById(pageId); if(t) t.classList.add('active'); if(window.innerWidth<=860) sidebar.classList.remove('open'); }
+    function updateNavLockedState() { document.querySelectorAll('.nav-item[data-need]').forEach(item=>{ const need=parseInt(item.dataset.need); if(need<=currentAccessLevel){ item.classList.remove('locked'); item.style.opacity='1'; item.style.cursor='pointer'; } else { item.classList.add('locked'); item.style.opacity='0.5'; item.style.cursor='not-allowed'; } }); }
+    function getNextLevel() { return currentAccessLevel < 5 ? currentAccessLevel + 1 : 5; }
 
-document.querySelectorAll('.nav-item').forEach(item => {
-    item.addEventListener('click', () => {
-        const page = item.getAttribute('data-page');
-        if(!page) return;
-        const needLevelAttr = item.getAttribute('data-need');
-        if(needLevelAttr !== null) {
-            const need = parseInt(needLevelAttr, 10);
-            openPageWithAccess(page, need);
-        } else {
-            showPageDirect(page);
-        }
+    // ===== ПУТЕВОДИТЕЛЬ =====
+    function updateGuideCards() {
+        const grid = document.getElementById('guideGrid');
+        const sections = [
+            { id:'lvl1', level:1, title:'УРОВЕНЬ 1/8080', desc:'Общая информация (Разделы 1-6)' },
+            { id:'lvl2', level:2, title:'УРОВЕНЬ 2/8080', desc:'Полное описание, история, биология (Разделы 7-12)' },
+            { id:'lvl3', level:3, title:'УРОВЕНЬ 3/8080', desc:'Способности, ограничения, нейтрализация (Разделы 13-19)' },
+            { id:'lvl4', level:4, title:'УРОВЕНЬ 4/8080', desc:'Эксперименты, инциденты, операции (Разделы 20-25)' },
+            { id:'lvl5', level:5, title:'УРОВЕНЬ 5/8080', desc:'Взаимодействия, интервью, теории (Разделы 26-31)' },
+            { id:'o5', level:5, title:'УРОВЕНЬ O5/8080', desc:'Правда, угрозы, сценарии (Разделы 32-37)' },
+            { id:'omega', level:5, title:'УРОВЕНЬ Ω/8080', desc:'Последняя правда, финальные записи (Разделы 38-42)' },
+            { id:'profile', level:1, title:'👤 ПРОФИЛЬ', desc:'Управление доступом и идентификация' }
+        ];
+        grid.innerHTML = '';
+        sections.forEach(s => {
+            const card = document.createElement('div');
+            card.className = 'guide-card' + (s.level > currentAccessLevel ? ' locked-card' : '');
+            card.innerHTML = `<div class="g-level">${s.level > currentAccessLevel ? '🔒' : '📄'} Уровень ${s.level}</div>
+                              <div class="g-title">${s.title}</div>
+                              <div class="g-desc">${s.desc}</div>`;
+            if(s.level <= currentAccessLevel) {
+                card.addEventListener('click', ()=>showPage(s.id));
+            } else {
+                card.addEventListener('click', ()=>{
+                    const next = getNextLevel();
+                    if(s.level > next) { alert(`❌ НЕЛЬЗЯ ПЕРЕПРЫГНУТЬ УРОВНИ! Доступно повышение только до ${next}.`); return; }
+                    pendingPageId = s.id; pendingTargetLevel = s.level;
+                    authModalSub.textContent = `Требуется повышение с ${currentAccessLevel} до ${s.level} уровня.`;
+                    authModal.style.display = 'flex';
+                });
+            }
+            grid.appendChild(card);
+        });
+    }
+
+    // ===== СОБЫТИЯ =====
+    document.querySelectorAll('.nav-item').forEach(item => {
+        item.addEventListener('click', function() {
+            const page = this.dataset.page;
+            if(!page) return;
+            const need = this.dataset.need;
+            if(need !== undefined) {
+                const needed = parseInt(need);
+                if(currentAccessLevel >= needed) { showPage(page); return; }
+                const next = getNextLevel();
+                if(needed > next) { alert(`❌ НЕЛЬЗЯ ПЕРЕПРЫГНУТЬ УРОВНИ! Доступно повышение только до ${next}.`); return; }
+                pendingPageId = page; pendingTargetLevel = needed;
+                authModalSub.textContent = `Требуется повышение с ${currentAccessLevel} до ${needed} уровня.`;
+                authModal.style.display = 'flex';
+            } else showPage(page);
+        });
     });
-});
 
-menuBtn.addEventListener('click', () => {
-    sidebar.classList.toggle('open');
-});
+    menuBtn.addEventListener('click', e=>{ e.stopPropagation(); sidebar.classList.toggle('open'); });
+    document.addEventListener('click', function(e){ if(window.innerWidth<=860 && !sidebar.contains(e.target) && !menuBtn.contains(e.target)) sidebar.classList.remove('open'); });
 
-document.addEventListener('click', function(event) {
-    if(window.innerWidth <= 900) {
-        if(!sidebar.contains(event.target) && !menuBtn.contains(event.target)) {
-            sidebar.classList.remove('open');
+    let tempTargetLevel = 2;
+    document.getElementById('continueAuthBtn').addEventListener('click', ()=>{
+        const next = getNextLevel();
+        if(next > 5) { alert('❌ ДОСТИГНУТ МАКСИМАЛЬНЫЙ УРОВЕНЬ (5).'); closeAllModals(); return; }
+        reqLevelSelect.innerHTML = '';
+        for(let lvl=2; lvl<=5; lvl++) {
+            const opt = document.createElement('option');
+            opt.value = lvl; opt.textContent = `УРОВЕНЬ ${lvl}`;
+            if(lvl > next) { opt.disabled = true; opt.textContent += ` (недоступно)`; }
+            reqLevelSelect.appendChild(opt);
         }
-    }
-});
+        reqLevelSelect.value = next;
+        levelModalSub.textContent = `Ваш текущий уровень: ${currentAccessLevel}. Доступно повышение до ${next} уровня.`;
+        authModal.style.display = 'none'; levelModal.style.display = 'flex';
+    });
+    document.getElementById('cancelAuthBtn').addEventListener('click', ()=>{ closeAllModals(); pendingPageId = null; });
+    document.getElementById('confirmLevelBtn').addEventListener('click', ()=>{
+        const selected = parseInt(reqLevelSelect.value);
+        const next = getNextLevel();
+        if(selected !== next) { alert(`❌ НЕЛЬЗЯ ПЕРЕПРЫГНУТЬ УРОВНИ! Доступно повышение до ${next}.`); return; }
+        tempTargetLevel = selected; levelModal.style.display = 'none';
+        idModalTargetLevel.textContent = tempTargetLevel; idModal.style.display = 'flex';
+    });
+    document.getElementById('finalLoginBtn').addEventListener('click', ()=>{
+        const name = document.getElementById('personName').value.trim();
+        const id = document.getElementById('personID').value.trim();
+        if(name.length < 2 || id.length < 3) { alert('ОШИБКА: имя или ID слишком короткие.'); closeAllModals(); return; }
+        if(tempTargetLevel !== currentAccessLevel + 1) { alert(`❌ НЕЛЬЗЯ ПЕРЕПРЫГНУТЬ УРОВНИ! Доступно повышение до ${currentAccessLevel+1}.`); closeAllModals(); return; }
+        currentAccessLevel = tempTargetLevel; currentUserName = name.toUpperCase(); currentUserID = id;
+        updateProfileUI(); updateAccessUI(); closeAllModals();
+        if(pendingPageId && currentAccessLevel >= pendingTargetLevel) { showPage(pendingPageId); pendingPageId = null; }
+        else { alert(`✅ ДОСТУП ПОВЫШЕН ДО УРОВНЯ ${currentAccessLevel}.`); showPage('profile'); }
+        document.getElementById('personName').value = ''; document.getElementById('personID').value = '';
+    });
+    document.getElementById('forceAuthBtn').addEventListener('click', ()=>{
+        const next = getNextLevel();
+        if(next > 5) { alert('❌ ДОСТИГНУТ МАКСИМАЛЬНЫЙ УРОВЕНЬ (5).'); return; }
+        pendingPageId = 'profile'; pendingTargetLevel = next;
+        authModalSub.textContent = `Требуется повышение с ${currentAccessLevel} до ${next} уровня.`;
+        authModal.style.display = 'flex';
+    });
+    document.getElementById('logoutBtn').addEventListener('click', ()=>{ resetProfile(); alert('Сессия сброшена. Уровень 1.'); showPage('home'); closeAllModals(); pendingPageId = null; });
 
-let tempTargetLevel = 2;
-
-document.getElementById('continueAuthBtn')?.addEventListener('click', () => {
-    authModal.style.display = 'none';
-    levelModal.style.display = 'flex';
-});
-document.getElementById('cancelAuthBtn')?.addEventListener('click', () => {
-    closeAllModals();
-    pendingPageId = null;
-});
-document.getElementById('confirmLevelBtn')?.addEventListener('click', () => {
-    const selectedVal = document.getElementById('reqLevelSelect').value;
-    tempTargetLevel = parseInt(selectedVal, 10);
-    levelModal.style.display = 'none';
-    idModal.style.display = 'flex';
-});
-
-document.getElementById('finalLoginBtn')?.addEventListener('click', () => {
-    const nameInput = document.getElementById('personName').value.trim();
-    const idInput = document.getElementById('personID').value.trim();
-    if(nameInput.length < 2 || idInput.length < 3) {
-        alert("[ОШИБКА АУТЕНТИФИКАЦИИ] Имя слишком короткое или ID недействителен. Доступ отклонён.");
-        closeAllModals();
-        return;
-    }
-    currentAccessLevel = tempTargetLevel;
-    if(profileNameSpan) profileNameSpan.innerText = nameInput.toUpperCase();
-    if(profileIDSpan) profileIDSpan.innerText = idInput;
-    if(homeProfileName) homeProfileName.innerText = nameInput.toUpperCase();
-    updateAccessUI();
-    closeAllModals();
-    if(pendingPageId && currentAccessLevel >= pendingTargetLevel) {
-        showPageDirect(pendingPageId);
-        pendingPageId = null;
-    } else if(pendingPageId && currentAccessLevel < pendingTargetLevel) {
-        alert(`❌ ДОСТУП ОТКЛОНЕН. Ваш текущий уровень: ${currentAccessLevel}, требуется: ${pendingTargetLevel}.`);
-        pendingPageId = null;
-    } else {
-        alert(`✅ ДОСТУП ПОВЫШЕН ДО УРОВНЯ ${currentAccessLevel}. Добро пожаловать, агент.`);
-        showPageDirect('profile');
-    }
-    document.getElementById('personName').value = '';
-    document.getElementById('personID').value = '';
-});
-
-document.getElementById('forceAuthBtn')?.addEventListener('click', () => {
-    tempTargetLevel = 5;
-    authModal.style.display = 'flex';
-});
-
-document.getElementById('logoutBtn')?.addEventListener('click', () => {
-    currentAccessLevel = 1;
-    updateAccessUI();
-    resetProfileInfo();
-    alert("Сессия сброшена. Уровень доступа = 1 (минимальный).");
-    showPageDirect('home');
-    closeAllModals();
-    pendingPageId = null;
-});
-
-updateAccessUI();
-resetProfileInfo();
-console.log("SCP FOUNDATION DATABASE — ДОСЬЕ SCP-8080 ЗАГРУЖЕНО");
+    // ===== ЗАГРУЗКА =====
+    if(!loadProfile()) { currentAccessLevel=1; currentUserName=''; currentUserID=''; }
+    updateProfileUI(); updateAccessUI();
 </script>
 </body>
 </html>
-```
